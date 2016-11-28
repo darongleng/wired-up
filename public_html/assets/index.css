@@ -1,0 +1,13 @@
+
+body {
+	background-color: grey;
+}
+.container {
+	text-align: center;
+	font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+}
+
+.textfield {
+	font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+	text-align: center;
+}
