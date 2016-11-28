@@ -27,7 +27,6 @@ myModule.controller("MainCtrl", function ($scope) {
     $scope.mMyWorld = new ClassExample();
     $scope.mViewManipulator = new ViewManipulator($scope.mMyWorld);
 
-    $scope.mMouseOver = "Nothing";
     $scope.mLastWCPosX = 0;
     $scope.mLastWCPosY = 0;
 

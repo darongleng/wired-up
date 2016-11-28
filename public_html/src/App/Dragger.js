@@ -1,5 +1,5 @@
-function Dragger(shader) {
-
+function Dragger(shader, myWorld) {
+	
 	this.squareDragger = new SquareBorder(shader);
     this.squareDragger.setColor([0,0,0,1])
     this.squareDragger.setBorderSize(0.05);
@@ -11,14 +11,12 @@ function Dragger(shader) {
     this.currentDragPoint = [0,0]; // point in WC
     // dragging
     this.dragging = false; // determines if ViewManipulator is in dragging mode
-
 }
 
 Dragger.prototype.start = function (wcX, wcY) {
 	this.startPoint = [wcX, wcY];
 	this.dragging = true;
 }
-
 
 Dragger.prototype.drag = function (wcX, wcY) {
 	this.currentDragPoint = [wcX, wcY];
@@ -41,6 +39,10 @@ Dragger.prototype.release = function (wcX, wcY) {
 
 Dragger.prototype.isDragging = function (wcX, wcY) {
 	return this.dragging;
+}
+
+Dragger.prototype.getTransformObject = function() {
+	return this.squareDragger.getXform();
 }
 
 Dragger.prototype.draw = function(camera) {

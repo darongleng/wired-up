@@ -42,7 +42,10 @@ SceneNode.prototype.getBoundingPoints = function(parentMat) {
     parentMat = parentMat || mat4.create();
     var matXform = this.getXform().getXform();
     mat4.multiply(matXform, parentMat, matXform); // concat parent and matXofrm
-    var xMin = 0, xMax = 0, yMin = 0, yMax = 0;
+    var xMin = Number.MAX_SAFE_INTEGER,
+        xMax = Number.MIN_SAFE_INTEGER, 
+        yMin = Number.MAX_SAFE_INTEGER, 
+        yMax = Number.MIN_SAFE_INTEGER;
 
     // iterate through set
     for (var i = 0; i < this.mSet.length; i++) {
@@ -60,11 +63,11 @@ SceneNode.prototype.getBoundingPoints = function(parentMat) {
     // iterate through child
     for (var i = 0; i < this.mChildren.length; i++) {
         var curChild = this.mChildren[i];
-        var boundingPoints = curChild.getBoundingPoints(matXform);
-        xMin = Math.min(xMin, boundingPoints.xMin);
-        xMax = Math.max(xMax, boundingPoints.xMax);
-        yMin = Math.min(yMin, boundingPoints.yMin);
-        yMax = Math.max(yMax, boundingPoints.yMax);
+        var bound = curChild.getBoundingPoints(matXform);
+        xMin = Math.min(xMin, bound.xMin);
+        xMax = Math.max(xMax, bound.xMax);
+        yMin = Math.min(yMin, bound.yMin);
+        yMax = Math.max(yMax, bound.yMax);
     }
 
     return {
@@ -73,8 +76,38 @@ SceneNode.prototype.getBoundingPoints = function(parentMat) {
         yMin: yMin,
         yMax: yMax
     }
-
 }
+
+// this function returns the corners positions of all children scene nodes and rederables
+SceneNode.prototype.getAllCornersPositions = function(parentMat, allCorners) {
+    parentMat = parentMat || mat4.create();
+    var matXform = this.getXform().getXform();
+    mat4.multiply(matXform, parentMat, matXform); // concat parent and matXofrm
+
+    allCorners = allCorners || [];
+
+    // iterate through set
+    for (var i = 0; i < this.mSet.length; i++) {
+        var curShape = this.mSet[i];
+        var corners = curShape.getCornersPositions(matXform); // each corner is a point of x and y
+                                                              
+        if (corners != null) { // ensures shape returns corners
+            allCorners.push(corners[0]);
+            allCorners.push(corners[1]);
+            allCorners.push(corners[2]);
+            allCorners.push(corners[3]);
+        }                                                              
+    }
+
+    // iterate through child
+    for (var i = 0; i < this.mChildren.length; i++) {
+        var curChild = this.mChildren[i];
+        curChild.getAllCornersPositions(matXform, allCorners);
+    }
+
+    return allCorners;
+}
+
 
 // ======> functions related to this.mSet <======
 SceneNode.prototype.size = function () { return this.mSet.length; };

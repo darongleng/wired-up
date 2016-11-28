@@ -1,16 +1,11 @@
 function ViewManipulator(myWorld) {
 	this.mMyWorld = myWorld;
 	this.mManipulator = myWorld.getManipulatorNode();
-    // this.mManipulator.show();
 
-    // first click
-    this.firstClick = [0,0]; // point in WC
-    // second click
-    this.currentDragPoint = [0,0]; // point in WC
-    // dragging
-    this.dragging = false; // determines if ViewManipulator is in dragging mode
+    this.dragger = new Dragger(myWorld.mConstColorShader, myWorld);
 
-    this.dragger = new Dragger(myWorld.mConstColorShader);
+    this.selectedSceneNodes = null;
+
 }
 
 ViewManipulator.prototype.detectMouseDown = function (wcX, wcY) {
@@ -25,13 +20,19 @@ ViewManipulator.prototype.detectMouseMove = function (wcX, wcY, eventWhich) {
         this.dragger.release();
         return;
     }
-    if (this.dragger.isDragging())
+
+    if (this.dragger.isDragging()){
         this.dragger.drag(wcX, wcY);
+        var sceneNodes = this.mMyWorld.getSceneNodesInArea(this.dragger.getTransformObject());
+        this.selectedSceneNodes = sceneNodes;
+        console.log(sceneNodes);
+    }
 };
 
 ViewManipulator.prototype.detectMouseUp = function () {
     console.log("mouse up")
     this.dragger.release();
+    this.selectedSceneNodes = null;
 }
 
 ViewManipulator.prototype.detectMouseLeave = function () {

@@ -36,24 +36,30 @@ function ClassExample() {
     this.parentNode = new SceneNode(this.mConstColorShader, "Root");
     this.parentNode.addToSet(this.square);
     this.parentNode.addToSet(this.square1);
-    this.parentNode.getXform().setRotationInRad(Math.PI/4);
-    this.parentNode.getXform().setPosition(0, 0);
+    this.parentNode.getXform().setPosition(-4, 0);
 
-    this.childNode = new SceneNode(this.mConstColorShader, "Child1");
     this.square2 = new SquareRenderable(this.mConstColorShader);
     this.square2.setColor([1,0,0,1]);
-    this.square2.getXform().setSize(2, 18);
+    this.square2.getXform().setSize(4, 4);
     this.square2.getXform().setPosition(0, 0);
-    this.childNode.addToSet(this.square2);
 
-    // this.parentNode.addAsChild(this.childNode);
+    this.node2 = new SceneNode(this.mConstColorShader, "Child1");
+    this.node2.getXform().setPosition(8, 4);
+    this.node2.addToSet(this.square2);
+
     this.nodes.push(this.parentNode);
+    this.nodes.push(this.node2);
 
-    console.log(this.parentNode.getBoundingPoints());
+    // console.log(this.parentNode.getBoundingPoints());
+    console.log(this.node2.getBoundingPoints());
 }
 
 ClassExample.prototype.getManipulatorNode = function() {
     return this.snManipualtor;
+}
+
+ClassExample.prototype.getAllSceneNodes = function() {
+    return this.nodes;
 }
 
 ClassExample.prototype.draw = function (camera) {
