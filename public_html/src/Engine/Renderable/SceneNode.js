@@ -47,27 +47,15 @@ SceneNode.prototype.getBoundingPoints = function(parentMat) {
         yMin = Number.MAX_SAFE_INTEGER, 
         yMax = Number.MIN_SAFE_INTEGER;
 
-    // iterate through set
-    for (var i = 0; i < this.mSet.length; i++) {
-        var curShape = this.mSet[i];
-        var corners = curShape.getCornersPositions(matXform); // each is a point of x and y
-                                                              
-        if (corners != null) { // ensures shape returns corners
-            xMin = Math.min(xMin, corners[0][0], corners[1][0], corners[2][0], corners[3][0]);
-            xMax = Math.max(xMax, corners[0][0], corners[1][0], corners[2][0], corners[3][0]);
-            yMin = Math.min(yMin, corners[0][1], corners[1][1], corners[2][1], corners[3][1]);
-            yMax = Math.max(yMax, corners[0][1], corners[1][1], corners[2][1], corners[3][1]);
-        }                                                              
-    }
-    
-    // iterate through child
-    for (var i = 0; i < this.mChildren.length; i++) {
-        var curChild = this.mChildren[i];
-        var bound = curChild.getBoundingPoints(matXform);
-        xMin = Math.min(xMin, bound.xMin);
-        xMax = Math.max(xMax, bound.xMax);
-        yMin = Math.min(yMin, bound.yMin);
-        yMax = Math.max(yMax, bound.yMax);
+    var allCorners = this.getAllCornersPositions();
+    var corner = null;
+    for (var i = 0; i < allCorners.length; i++) {
+        // each corner is a point
+        corner = allCorners[i];
+        xMin = Math.min(xMin, corner[0]);
+        xMax = Math.max(xMax, corner[0]);
+        yMin = Math.min(yMin, corner[1]);
+        yMax = Math.max(yMax, corner[1]);
     }
 
     return {
@@ -78,7 +66,7 @@ SceneNode.prototype.getBoundingPoints = function(parentMat) {
     }
 }
 
-// this function returns the corners positions of all children scene nodes and rederables
+// this function returns the corners positions of all children scene nodes and renderables
 SceneNode.prototype.getAllCornersPositions = function(parentMat, allCorners) {
     parentMat = parentMat || mat4.create();
     var matXform = this.getXform().getXform();
@@ -106,6 +94,31 @@ SceneNode.prototype.getAllCornersPositions = function(parentMat, allCorners) {
     }
 
     return allCorners;
+}
+
+SceneNode.prototype.contains = function (point, parentMat) {
+    parentMat = parentMat || mat4.create();
+
+    var matXform = this.getXform().getXform();
+    mat4.multiply(matXform, parentMat, matXform);
+    // pass point and concat matrix to children nodes
+    var contained = false;
+    for (var i = this.mChildren.length-1; i >= 0; i--) {
+        var curChild = this.mChildren[i];
+        contained =  curChild.contains(point, matXform);
+        if (contained)
+            return true;
+    }
+
+    // pass point and concat matrix to renderables
+    for (var i = this.mSet.length-1; i >= 0; i--) {
+        var curRenderable = this.mSet[i];
+        contained = curRenderable.contains(point, matXform);
+        if (contained)
+            return true;
+    }
+
+    return false;
 }
 
 

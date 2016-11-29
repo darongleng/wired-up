@@ -50,24 +50,22 @@ ClassExample.prototype.getSceneNodesInArea = function (pTransform) {
             seventh = drag_xMin <= bound.xMin && drag_yMax >= bound.yMax;
 
         if (zero) { // can also be fourth
-
             if (drag_yMin <= bound.yMin && drag_yMax >= bound.yMin || // fourth
-                drag_yMin <= bound.yMax && drag_yMax >= bound.yMax ) // zero
+                drag_yMin <= bound.yMax && drag_yMax >= bound.yMax || second ) // zero || second
                     containedChildren.push(curChild);
 
         } else if (first) {
-
             if (drag_xMin <= bound.xMax && drag_yMin <= bound.yMax)
                 containedChildren.push(curChild);
 
         }else if (second) { // can also be sixth
-
+          
             if (drag_xMin <= bound.xMin && drag_xMax >= bound.xMin || // sixth
                 drag_xMin <= bound.xMax && drag_xMax >= bound.xMax ) // second
                     containedChildren.push(curChild)
 
         } else if (third) {
-
+    
             if (drag_xMin <= bound.xMax && drag_yMax >= bound.yMin)
                 containedChildren.push(curChild);
 
@@ -81,10 +79,20 @@ ClassExample.prototype.getSceneNodesInArea = function (pTransform) {
             if (drag_xMax >= bound.xMin && drag_yMin <= bound.yMax)
                 containedChildren.push(curChild);
 
-        }
+        } 
     }
 
     return containedChildren;
+}
+
+ClassExample.prototype.detectMouseOverShape = function(wcX, wcY) {
+    for (var i = 0; i < this.nodes.length; i++) {
+        var curNode = this.nodes[i];
+        if (curNode.contains([wcX, wcY])) {
+            return true;
+        }
+    }
+    return false;
 }
 
 // a helper function

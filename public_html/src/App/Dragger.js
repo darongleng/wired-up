@@ -1,4 +1,4 @@
-function Dragger(shader, myWorld) {
+function Dragger(shader) {
 	
 	this.squareDragger = new SquareBorder(shader);
     this.squareDragger.setColor([0,0,0,1])

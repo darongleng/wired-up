@@ -15,6 +15,7 @@ gEngine.Core.inheritPrototype(SquareBorder, Renderable);
 
 // Ovreride the super-class "draw()" method!
 SquareBorder.prototype.draw = function (camera) {
+    camera.switchViewport();
     var parentTransform = this.getXform();
     var parentPosition = this.getXform().getPosition();
     var parentSize = this.getXform().getSize();

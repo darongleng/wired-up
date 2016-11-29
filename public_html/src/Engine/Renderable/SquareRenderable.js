@@ -33,6 +33,27 @@ SquareRenderable.prototype.draw = function (camera, parentMat) {
 
 // The get/set color, and getXform funcitons are inherited
 
+SquareRenderable.prototype.contains = function (point, parentMat) {
+    var i_parentMat = mat4.create();
+    mat4.invert(i_parentMat, parentMat);
+
+    var point_oc = [point[0], point[1]];
+    vec2.transformMat4(point_oc, point_oc, i_parentMat);
+
+    var xForm = this.mXform;
+    var center = xForm.getPosition();
+    var width = xForm.getWidth();
+    var height = xForm.getHeight();
+
+    if (point_oc[0] >= center[0]-width/2 &&
+        point_oc[0] <= center[0]+width/2 &&
+        point_oc[1] >= center[1]-height/2 &&
+        point_oc[1] <= center[1]+height/2) {
+        return true;
+    }
+    return false;
+}
+
 
 // ================ OVERRDIE ================
 // INPUT: parentMat must not be NULL
