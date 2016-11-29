@@ -44,7 +44,7 @@ ViewManipulator.prototype.detectMouseUp = function () {
 }
 
 ViewManipulator.prototype.detectMouseLeave = function () {
-    console.log("mouse leave")
+    console.log("mouse leave");
 }
 
 ViewManipulator.prototype.draw = function (camera) {
