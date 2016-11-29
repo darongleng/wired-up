@@ -30,13 +30,13 @@ ViewManipulator.prototype.detectMouseMove = function (wcX, wcY, eventWhich) {
 };
 
 ViewManipulator.prototype.detectMouseUp = function () {
-    console.log("mouse up")
+    console.log("mouse up");
     this.dragger.release();
     this.selectedSceneNodes = null;
 }
 
 ViewManipulator.prototype.detectMouseLeave = function () {
-    console.log("mouse leave")
+    console.log("mouse leave");
 }
 
 ViewManipulator.prototype.draw = function (camera) {
