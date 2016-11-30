@@ -150,6 +150,7 @@ SceneNode.prototype.removeChild= function (node) {
     if (index > -1)
         this.mChildren.splice(index, 1);
 };
+
 SceneNode.prototype.getChildAt = function (index) {
     return this.mChildren[index];
 };

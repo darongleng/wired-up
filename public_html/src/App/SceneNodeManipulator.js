@@ -6,7 +6,151 @@ function SceneNodeManipulator(shader) {
     this.color = [0/255, 109/255, 255/255,1];
     this.knobSize = 0.2;
     this.barSize = 0.03;	
+    this.init(shader);
 
+
+    this.moving = false;
+    
+}
+gEngine.Core.inheritPrototype(SceneNodeManipulator, SceneNode);
+
+SceneNodeManipulator.prototype.detectMouseOverShape = function(wcX, wcY) {
+    for (var i = 0; i < this.container.length; i++) {
+        var curNode = this.container[i];
+        if (curNode.contains([wcX, wcY])) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// RETURN: true, indicates show successfully. false otherwise.
+SceneNodeManipulator.prototype.show = function () {
+    if (this.container.length <= 0) {
+        this.hide();
+        return false;
+    }
+    this.hidden = false;
+    this.computeNewTransform();
+    return true;
+}
+
+SceneNodeManipulator.prototype.hide = function () {
+    this.hidden = true;
+    this.clearContainer();
+    CanvasMouseSupport.CanvasMouse.toDefault();
+    return true;
+}
+
+SceneNodeManipulator.prototype.toMoving = function (moving) {
+    this.moving = moving;
+}
+
+SceneNodeManipulator.prototype.notMoving = function () {
+    this.moving = false;
+}
+
+SceneNodeManipulator.prototype.isMoving = function () {
+    return this.moving;
+}
+
+SceneNodeManipulator.prototype.isHidden = function () {
+    return this.hidden;
+}
+
+SceneNodeManipulator.prototype.setContainer = function (newSceneNodes) {
+    this.container = newSceneNodes;
+}
+
+SceneNodeManipulator.prototype.clearContainer = function () {
+    this.container = [];
+}
+
+SceneNodeManipulator.prototype.translate = function (dx, dy) {
+    for (var i = 0; i < this.container.length; i++) {
+        var curNode = this.container[i];
+        var xForm = curNode.getXform();
+        var curPos = xForm.getPosition();
+        xForm.setPosition(curPos[0]+dx, curPos[1]+dy);
+    }
+    this.mXform.incXPosBy(dx);
+    this.mXform.incYPosBy(dy);
+
+}
+
+// this function detects if mouse position (in WC) touches any of the knobs
+// if it does return true, otherwise false
+SceneNodeManipulator.prototype.detectKnobCollision = function(wcX, wcY) {
+    if (this.hidden)
+        return -1;
+
+    var mouse = CanvasMouseSupport.CanvasMouse;
+    var rootXform = this.getXform(); // pivoted transform of this SceneNodes
+    var wcPos = [wcX, wcY];
+
+    // get root matrix
+    var rootMatrix = rootXform.getXform();
+    // calculate this matrix with repsect to its parent
+    this.parentMat = this.parentMat || mat4.create();
+    // coverts root matrix with respect to parent matrix in WC
+    mat4.multiply(rootMatrix, this.parentMat, rootMatrix);
+
+    for (var i = 0; i < 8; i++) {
+        // checks top knob
+        var childPosOC = this.getRenderableAt(i).getXform().getPosition();
+        var childPosWC = this.convertPosRelativeToRoot(childPosOC, rootMatrix);
+        if (this.withInBound(childPosWC, wcPos)){
+            return i;
+        }    
+    }
+
+    // no knob clicked
+    return -1;
+}
+
+// =====> OVERRIDE FUNTIONS <=====
+SceneNodeManipulator.prototype.draw = function(aCamera, parentMat) {
+    var xfMat = this.mXform.getXform();
+    if (parentMat !== undefined)
+        mat4.multiply(xfMat, parentMat, xfMat);
+    
+    // Draw our own!
+    if (!this.hidden && this.container !== null && this.container.length > 0) {
+        for (var i = this.mSet.length-1; i >= 0 ; i--) {
+            this.mSet[i].draw(aCamera, xfMat); // pass to each renderable
+        }
+    }
+    
+}
+
+// =====> PRIVATE FUNTIONS <=====
+SceneNodeManipulator.prototype.convertPosRelativeToRoot = function (childPosOC, rootMatrix) {
+	var childPosWC = vec2.fromValues(0,0);
+	vec2.transformMat4(childPosWC, childPosOC, rootMatrix);
+	return childPosWC;
+}
+
+var kBoundTol = 0.3;
+// check if (wcx, wcy) is close enough to (px, py) by kBountTol
+SceneNodeManipulator.prototype.withInBound = function (p, wc) {
+    return ( ((p[0] - kBoundTol) < wc[0]) &&
+        ((p[0] + kBoundTol) > wc[0]) &&
+        ((p[1] - kBoundTol) < wc[1]) &&
+        ((p[1] + kBoundTol) > wc[1] ) );
+};
+
+// a helper function
+function printMatrix(array, row, col) {
+    for (var i = 0; i < row; i++) {
+        var rowStr = "";
+        for (var j = 0; j < col; j++) {
+            rowStr += array[(i*col)+j] + ", "
+        }
+        console.log(rowStr);
+    }
+}
+
+SceneNodeManipulator.prototype.init = function (shader) {
     // now create the children shapes
     var obj = null;
     // 0: top middle knob
@@ -76,38 +220,6 @@ function SceneNodeManipulator(shader) {
     obj = new SquareRenderable(shader);  
     this.addToSet(obj);
     obj.setColor(this.color);
-}
-gEngine.Core.inheritPrototype(SceneNodeManipulator, SceneNode);
-
-
-// RETURN: true, indicates show successfully. false otherwise.
-SceneNodeManipulator.prototype.show = function () {
-    if (this.container.length <= 0) {
-        this.hide();
-        return false;
-    }
-    this.hidden = false;
-    this.computeNewTransform();
-    return true;
-}
-
-SceneNodeManipulator.prototype.hide = function () {
-    this.hidden = true;
-    this.clearContainer();
-    CanvasMouseSupport.CanvasMouse.toDefault();
-    return true;
-}
-
-SceneNodeManipulator.prototype.isHidden = function () {
-    return this.hidden;
-}
-
-SceneNodeManipulator.prototype.setContainer = function (newSceneNodes) {
-    this.container = newSceneNodes;
-}
-
-SceneNodeManipulator.prototype.clearContainer = function () {
-    this.container = [];
 }
 
 SceneNodeManipulator.prototype.computeNewTransform = function () {
@@ -179,79 +291,6 @@ SceneNodeManipulator.prototype.computeNewTransform = function () {
     xform = this.getRenderableAt(KNOBS.BOTTOM_BAR).getXform();
     xform.setPosition(0, -height/2);
     xform.setSize(width, this.barSize);
-}
-
-// this function detects if mouse position (in WC) touches any of the knobs
-// if it does return true, otherwise false
-SceneNodeManipulator.prototype.detectKnobCollision = function(wcX, wcY) {
-    if (this.hidden)
-        return -1;
-
-    var mouse = CanvasMouseSupport.CanvasMouse;
-    var rootXform = this.getXform(); // pivoted transform of this SceneNodes
-    var wcPos = [wcX, wcY];
-
-    // get root matrix
-    var rootMatrix = rootXform.getXform();
-    // calculate this matrix with repsect to its parent
-    this.parentMat = this.parentMat || mat4.create();
-    // coverts root matrix with respect to parent matrix in WC
-    mat4.multiply(rootMatrix, this.parentMat, rootMatrix);
-
-    for (var i = 0; i < 8; i++) {
-        // checks top knob
-        var childPosOC = this.getRenderableAt(i).getXform().getPosition();
-        var childPosWC = this.convertPosRelativeToRoot(childPosOC, rootMatrix);
-        if (this.withInBound(childPosWC, wcPos)){
-            return i;
-        }    
-    }
-
-    // no knob clicked
-    return -1;
-}
-
-// =====> OVERRIDE FUNTIONS <=====
-SceneNodeManipulator.prototype.draw = function(aCamera, parentMat) {
-    
-    var xfMat = this.mXform.getXform();
-    if (parentMat !== undefined)
-        mat4.multiply(xfMat, parentMat, xfMat);
-    
-    // Draw our own!
-    if (!this.hidden && this.container !== null && this.container.length > 0) {
-        for (var i = this.mSet.length-1; i >= 0 ; i--) {
-            this.mSet[i].draw(aCamera, xfMat); // pass to each renderable
-        }
-    }
-    
-}
-
-// =====> PRIVATE FUNTIONS <=====
-SceneNodeManipulator.prototype.convertPosRelativeToRoot = function (childPosOC, rootMatrix) {
-	var childPosWC = vec2.fromValues(0,0);
-	vec2.transformMat4(childPosWC, childPosOC, rootMatrix);
-	return childPosWC;
-}
-
-var kBoundTol = 0.3;
-// check if (wcx, wcy) is close enough to (px, py) by kBountTol
-SceneNodeManipulator.prototype.withInBound = function (p, wc) {
-    return ( ((p[0] - kBoundTol) < wc[0]) &&
-        ((p[0] + kBoundTol) > wc[0]) &&
-        ((p[1] - kBoundTol) < wc[1]) &&
-        ((p[1] + kBoundTol) > wc[1] ) );
-};
-
-// a helper function
-function printMatrix(array, row, col) {
-    for (var i = 0; i < row; i++) {
-        var rowStr = "";
-        for (var j = 0; j < col; j++) {
-            rowStr += array[(i*col)+j] + ", "
-        }
-        console.log(rowStr);
-    }
 }
 
 var KNOBS = {
