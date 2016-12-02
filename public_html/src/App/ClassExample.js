@@ -21,36 +21,33 @@ function ClassExample() {
     this.snManipualtor = new SceneNodeManipulator(this.mConstColorShader);
     this.snManipualtor.getXform().setPosition(0, 2);
 
+
+
+    // adding this.parentNode
     this.square = new SquareRenderable(this.mConstColorShader);
     this.square.setColor([0,0,1,1]);
     this.square.getXform().setSize(4, 2);
-    this.square.getXform().setPosition(-5, 0);
-    this.square.getXform().setRotationInRad(Math.PI/4);
+    this.square.getXform().setPosition(0, 0);
+    this.square.getXform().setRotationInRad(Math.PI/2);
 
-    this.square1 = new SquareRenderable(this.mConstColorShader);
-    this.square1.setColor([0,1,0,1]);
-    this.square1.getXform().setSize(7, 1);
-    this.square1.getXform().setPosition(2, 3);
-    this.square1.getXform().setRotationInRad(-Math.PI/4);
-
-    this.parentNode = new SceneNode(this.mConstColorShader, "Root");
+    this.parentNode = new SceneNode(this.mConstColorShader, "Root", true);
     this.parentNode.addToSet(this.square);
-    this.parentNode.addToSet(this.square1);
-    this.parentNode.getXform().setPosition(-4, 0);
+    this.parentNode.getXform().setPosition(-4, 2);
 
+    this.nodes.push(this.parentNode);
+
+
+    // adding this.node2
     this.square2 = new SquareRenderable(this.mConstColorShader);
     this.square2.setColor([1,0,0,1]);
     this.square2.getXform().setSize(6, 2);
     this.square2.getXform().setPosition(0, 0);
-    // this.square2.getXform().setRotationInRad(-Math.PI/4);
 
-    this.node2 = new SceneNode(this.mConstColorShader, "Child1");
-    this.node2.getXform().setPosition(8, 4);
+    this.node2 = new SceneNode(this.mConstColorShader, "Child1", true);
+    this.node2.getXform().setPosition(4, 2);
     this.node2.addToSet(this.square2);
 
-    this.nodes.push(this.parentNode);
-    this.nodes.push(this.node2);
-}
+    this.nodes.push(this.node2);}
 
 ClassExample.prototype.getAllSceneNodes = function() {
     return this.nodes;

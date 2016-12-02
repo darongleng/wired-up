@@ -42,6 +42,7 @@ SceneNode.prototype.getBoundingPoints = function(parentMat) {
     parentMat = parentMat || mat4.create();
     var matXform = this.getXform().getXform();
     mat4.multiply(matXform, parentMat, matXform); // concat parent and matXofrm
+
     var xMin = Number.MAX_SAFE_INTEGER,
         xMax = Number.MIN_SAFE_INTEGER, 
         yMin = Number.MAX_SAFE_INTEGER, 
