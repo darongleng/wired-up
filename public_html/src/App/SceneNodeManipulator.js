@@ -6,12 +6,14 @@ function SceneNodeManipulator(shader) {
     this.color = [0/255, 109/255, 255/255,1];
     this.knobSize = 0.2;
     this.barSize = 0.03;
-    this.rotationKnobDistance = 1;	
+    this.rotationKnobDistance = 1;
     this.init(shader);
 
     this.moving = false;
     this.rotating = false;
-    
+	this.scaling = false;
+	this.scaleKnob = null;
+
 }
 gEngine.Core.inheritPrototype(SceneNodeManipulator, SceneNode);
 
@@ -73,11 +75,33 @@ SceneNodeManipulator.prototype.toRotating = function () {
 
 SceneNodeManipulator.prototype.notRotating = function () {
     this.rotating = false;
+	this.scaleKnob = null;
 }
 
 SceneNodeManipulator.prototype.isRotating = function () {
     return this.rotating;
 }
+
+// ============== SCALING ===================
+SceneNodeManipulator.prototype.toScaling = function () {
+    this.scaling = true;
+};
+
+SceneNodeManipulator.prototype.notScaling = function () {
+    this.scaling = false;
+};
+
+SceneNodeManipulator.prototype.isScaling = function () {
+    return this.scaling;
+};
+
+SceneNodeManipulator.prototype.setScaleKnob = function(knob) {
+	this.scaleKnob = knob;
+};
+
+SceneNodeManipulator.prototype.getScaleKnob = function () {
+	return this.scaleKnob;
+};
 
 SceneNodeManipulator.prototype.getRotatingKnobPosition = function () {
     // this Manipulator center position
@@ -152,6 +176,83 @@ SceneNodeManipulator.prototype.rotate = function (dTheta) {
     this.mXform.incRotationByRad(dTheta);
 }
 
+SceneNodeManipulator.prototype.scale = function(width, height) {
+	for (var i = 0; i < this.container.length; i++) {
+		var xform = this.container[i].getXform();
+		var curNodePos = xform.getPosition();
+		scaleNode(width, height, xform, this.getScaleKnob());
+	}
+	scaleNode(width, height, this.getXform(), this.getScaleKnob());
+};
+
+// helper function for scaling
+function scaleNode(width, height, xform, scaleKnob) {
+	console.log("Scale Knob: " + scaleKnob);
+	console.log(xform);
+	switch (scaleKnob) {
+		case KNOBS.ZERO:
+			// scale children
+			xform.incHeightBy(height);
+			break;
+		case KNOBS.FIRST:
+			// scale children
+			xform.incWidthBy(width);
+			xform.incHeightBy(height);
+			break;
+		case KNOBS.SECOND:
+			// scale children
+			xform.incWidthBy(width);
+			break;
+		case KNOBS.THIRD:
+			// set correct direction for height
+			height = -height;
+			xform.incWidthBy(width);
+			xform.incHeightBy(height);
+			break;
+		case KNOBS.FOURTH:
+			// set correction direction for height
+			height = -height;
+			xform.incHeightBy(height);
+			break;
+		case KNOBS.FIFTH:
+			// set correct direction for width & height
+			width = -width;
+			height = - height;
+			xform.incWidthBy(width);
+			xform.incHeightBy(height);
+			break;
+		case KNOBS.SIXTH:
+			// set correction direction for width
+			width = -width;
+			xform.incWidthBy(width);
+			break;
+		case KNOBS.SEVENTH:
+			// set correct direction for width
+			width = -width;
+			xform.incWidthBy(width);
+			xform.incHeightBy(height);
+			break;
+		case KNOBS.LEFT_BAR:
+			// set correct direction for width
+			width = -width;
+			xform.incWidthBy(width);
+			break;
+		case KNOBS.TOP_BAR:
+			xform.incHeightBy(height);
+			break;
+		case KNOBS.RIGHT_BAR:
+			xform.incWidthBy(width);
+			break;
+		case KNOBS.BOTTOM_BAR:
+			// set correct direction for height
+			height = -height;
+			xform.incHeightBy(height);
+			break;
+		default:
+			break;
+	}
+}
+
 // this function detects if mouse position (in WC) touches any of the knobs
 // if it does return true, otherwise false
 SceneNodeManipulator.prototype.detectKnobCollision = function(wcX, wcY) {
@@ -175,7 +276,7 @@ SceneNodeManipulator.prototype.detectKnobCollision = function(wcX, wcY) {
         var childPosWC = this.convertPosRelativeToRoot(childPosOC, rootMatrix);
         if (this.withInBound(childPosWC, wcPos)){
             return i;
-        }    
+        }
     }
 
     // no knob clicked
@@ -187,14 +288,14 @@ SceneNodeManipulator.prototype.draw = function(aCamera, parentMat) {
     var xfMat = this.mXform.getXform();
     if (parentMat !== undefined)
         mat4.multiply(xfMat, parentMat, xfMat);
-    
+
     // Draw our own!
     if (!this.hidden && this.container !== null && this.container.length > 0) {
         for (var i = this.mSet.length-1; i >= 0 ; i--) {
             this.mSet[i].draw(aCamera, xfMat); // pass to each renderable
         }
     }
-    
+
 }
 
 // =====> PRIVATE FUNTIONS <=====
@@ -240,7 +341,7 @@ SceneNodeManipulator.prototype.init = function (shader) {
     obj.getXform().setSize(this.knobSize, this.knobSize);
 
     // 2: right middle knob
-    obj = new SquareRenderable(shader); 
+    obj = new SquareRenderable(shader);
     this.addToSet(obj);
     obj.setColor(this.color);
     obj.getXform().setSize(this.knobSize, this.knobSize);
@@ -252,57 +353,57 @@ SceneNodeManipulator.prototype.init = function (shader) {
     obj.getXform().setSize(this.knobSize, this.knobSize);
 
     // 4: bottom middle knob
-    obj = new SquareRenderable(shader); 
+    obj = new SquareRenderable(shader);
     this.addToSet(obj);
     obj.setColor(this.color);
     obj.getXform().setSize(this.knobSize, this.knobSize);
 
     // 5: bottom left knob
-    obj = new SquareRenderable(shader);  
+    obj = new SquareRenderable(shader);
     this.addToSet(obj);
     obj.setColor(this.color);
     obj.getXform().setSize(this.knobSize, this.knobSize);
 
     // 6: left middle knob
-    obj = new SquareRenderable(shader); 
+    obj = new SquareRenderable(shader);
     this.addToSet(obj);
     obj.setColor(this.color);
     obj.getXform().setSize(this.knobSize, this.knobSize);
 
     // 7: top left knob
-    obj = new SquareRenderable(shader);  
+    obj = new SquareRenderable(shader);
     this.addToSet(obj);
     obj.setColor(this.color);
     obj.getXform().setSize(this.knobSize, this.knobSize);
 
     // 8: rotation knob
-    obj = new SquareRenderable(shader);  
+    obj = new SquareRenderable(shader);
     this.addToSet(obj);
     obj.setColor(this.color);
     obj.getXform().setSize(this.knobSize, this.knobSize);
 
     // 9: left bar
-    obj = new SquareRenderable(shader);  
+    obj = new SquareRenderable(shader);
     this.addToSet(obj);
     obj.setColor(this.color);
 
     // 10: top bar
-    obj = new SquareRenderable(shader); 
+    obj = new SquareRenderable(shader);
     this.addToSet(obj);
     obj.setColor(this.color);
 
     // 11: right bar
-    obj = new SquareRenderable(shader); 
+    obj = new SquareRenderable(shader);
     this.addToSet(obj);
     obj.setColor(this.color);
 
     // 12: bottom bar
-    obj = new SquareRenderable(shader);  
+    obj = new SquareRenderable(shader);
     this.addToSet(obj);
     obj.setColor(this.color);
 
     // 13: rotation bar
-    obj = new SquareRenderable(shader); 
+    obj = new SquareRenderable(shader);
     this.addToSet(obj);
     obj.setColor(this.color);
 }
@@ -315,8 +416,8 @@ SceneNodeManipulator.prototype.computeNewTransform = function () {
     var curNode = null;
     var bound = null;
     var xMin = Number.MAX_SAFE_INTEGER,
-        xMax = Number.MIN_SAFE_INTEGER, 
-        yMin = Number.MAX_SAFE_INTEGER, 
+        xMax = Number.MIN_SAFE_INTEGER,
+        yMin = Number.MAX_SAFE_INTEGER,
         yMax = Number.MIN_SAFE_INTEGER;
 
     for (var i = 0; i < this.container.length; i++) {
@@ -401,7 +502,95 @@ SceneNodeManipulator.prototype.computeNewTransform = function () {
 
 var KNOBS = {
     ZERO: 0, FIRST: 1, SECOND: 2, THIRD: 3, FOURTH: 4, FIFTH: 5,
-    SIXTH: 6, SEVENTH: 7, ROTATION: 8, LEFT_BAR: 9, TOP_BAR: 10, 
+    SIXTH: 6, SEVENTH: 7, ROTATION: 8, LEFT_BAR: 9, TOP_BAR: 10,
     RIGHT_BAR: 11, BOTTOM_BAR: 12, ROTATION_BAR: 13
 };
 
+
+/*
+console.log("Scale Knob: " + this.scaleKnob);
+switch (this.scaleKnob) {
+	case KNOBS.ZERO:
+		// scale children
+		xform.incHeightBy(height);
+		// scale parent
+		this.xform.incHeightBy(height);
+		break;
+	case KNOBS.FIRST:
+		// scale children
+		xform.incWidthBy(width);
+		xform.incHeightBy(height);
+		// scale parent
+		this.xform.incWidthBy(width);
+		this.xform.incHeightBy(height);
+		break;
+	case KNOBS.SECOND:
+		// scale children
+		xform.incWidthBy(width);
+		// scale parent
+		this.xform.incWidthBy(width);
+		break;
+	case KNOBS.THIRD:
+		// scale children
+		xform.incWidthBy(width);
+		xform.incHeightBy(height);
+		// scale parent
+		this.xform.incWidthBy(width);
+		this.xform.incHeightBy(height);
+		break;
+	case KNOBS.FOURTH:
+		// scale children
+		xform.incHeightBy(height);
+		// scale parent
+		this.xform.incHeightBy(height);
+		break;
+	case KNOBS.FIFTH:
+	// scale children
+		xform.incWidthBy(width);
+		xform.incHeightBy(height);
+		// scale parent
+		this.xform.incWidthBy(width);
+		this.xform.incHeightBy(height);
+		break;
+	case KNOBS.SIXTH:
+		// scale children
+		xform.incWidthBy(width);
+		// scale parent
+		this.xform.incWidthBy(width);
+		break;
+	case KNOBS.SEVENTH:
+		// scale children
+		xform.incWidthBy(width);
+		xform.incHeightBy(height);
+		// scale parent
+		this.xform.incWidthBy(width);
+		this.xform.incHeightBy(height);
+		break;
+	case KNOBS.LEFT_BAR:
+		// scale children
+		xform.incWidthBy(width);
+		// scale parent
+		this.xform.incWidthBy(width);
+		break;
+	case KNOBS.TOP_BAR:
+		// scale children
+		xform.incHeightBy(height);
+		// scale parent
+		this.xform.incHeightBy(height);
+		break;
+	case KNOBS.RIGHT_BAR:
+		// scale children
+		xform.incWidthBy(width);
+		// scale parent
+		this.xform.incWidthBy(width);
+		break;
+	case KNOBS.BOTTOM_BAR:
+		// scale children
+		xform.incHeightBy(height);
+		// scale parent
+		this.xform.incHeightBy(height);
+		break;
+	default:
+		break;
+}
+*/
