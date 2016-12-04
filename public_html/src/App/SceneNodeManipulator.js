@@ -176,12 +176,19 @@ SceneNodeManipulator.prototype.rotate = function (dTheta) {
     this.mXform.incRotationByRad(dTheta);
 }
 
-SceneNodeManipulator.prototype.scale = function(width, height) {
+SceneNodeManipulator.prototype.scale = function(mouseX, mouseY) {
+	var width, height;
+	// scale children
 	for (var i = 0; i < this.container.length; i++) {
 		var xform = this.container[i].getXform();
 		var curNodePos = xform.getPosition();
+		width = mouseX - curNodePos[0];
+		height = mouseY - curNodePos[1];
 		scaleNode(width, height, xform, this.getScaleKnob());
 	}
+	// scale SceneNodeManipulator
+	width = mouseX - this.getXform().getPosition()[0];
+	height = mouseY - this.getXform().getPosition()[1];
 	scaleNode(width, height, this.getXform(), this.getScaleKnob());
 };
 
@@ -191,62 +198,59 @@ function scaleNode(width, height, xform, scaleKnob) {
 	console.log(xform);
 	switch (scaleKnob) {
 		case KNOBS.ZERO:
-			// scale children
-			xform.incHeightBy(height);
+			xform.setHeight(height);
 			break;
 		case KNOBS.FIRST:
-			// scale children
-			xform.incWidthBy(width);
-			xform.incHeightBy(height);
+			xform.setWidth(width);
+			xform.setHeight(height);
 			break;
 		case KNOBS.SECOND:
-			// scale children
-			xform.incWidthBy(width);
+			xform.setWidth(width);
 			break;
 		case KNOBS.THIRD:
 			// set correct direction for height
 			height = -height;
-			xform.incWidthBy(width);
-			xform.incHeightBy(height);
+			xform.setWidth(width);
+			xform.setHeight(height);
 			break;
 		case KNOBS.FOURTH:
 			// set correction direction for height
 			height = -height;
-			xform.incHeightBy(height);
+			xform.setHeight(height);
 			break;
 		case KNOBS.FIFTH:
 			// set correct direction for width & height
 			width = -width;
 			height = - height;
-			xform.incWidthBy(width);
-			xform.incHeightBy(height);
+			xform.setWidth(width);
+			xform.setHeight(height);
 			break;
 		case KNOBS.SIXTH:
 			// set correction direction for width
 			width = -width;
-			xform.incWidthBy(width);
+			xform.setWidth(width);
 			break;
 		case KNOBS.SEVENTH:
 			// set correct direction for width
 			width = -width;
-			xform.incWidthBy(width);
-			xform.incHeightBy(height);
+			xform.setWidth(width);
+			xform.setHeight(height);
 			break;
 		case KNOBS.LEFT_BAR:
 			// set correct direction for width
 			width = -width;
-			xform.incWidthBy(width);
+			xform.setWidth(width);
 			break;
 		case KNOBS.TOP_BAR:
-			xform.incHeightBy(height);
+			xform.setHeight(height);
 			break;
 		case KNOBS.RIGHT_BAR:
-			xform.incWidthBy(width);
+			xform.setWidth(width);
 			break;
 		case KNOBS.BOTTOM_BAR:
 			// set correct direction for height
 			height = -height;
-			xform.incHeightBy(height);
+			xform.setHeight(height);
 			break;
 		default:
 			break;
@@ -505,92 +509,3 @@ var KNOBS = {
     SIXTH: 6, SEVENTH: 7, ROTATION: 8, LEFT_BAR: 9, TOP_BAR: 10,
     RIGHT_BAR: 11, BOTTOM_BAR: 12, ROTATION_BAR: 13
 };
-
-
-/*
-console.log("Scale Knob: " + this.scaleKnob);
-switch (this.scaleKnob) {
-	case KNOBS.ZERO:
-		// scale children
-		xform.incHeightBy(height);
-		// scale parent
-		this.xform.incHeightBy(height);
-		break;
-	case KNOBS.FIRST:
-		// scale children
-		xform.incWidthBy(width);
-		xform.incHeightBy(height);
-		// scale parent
-		this.xform.incWidthBy(width);
-		this.xform.incHeightBy(height);
-		break;
-	case KNOBS.SECOND:
-		// scale children
-		xform.incWidthBy(width);
-		// scale parent
-		this.xform.incWidthBy(width);
-		break;
-	case KNOBS.THIRD:
-		// scale children
-		xform.incWidthBy(width);
-		xform.incHeightBy(height);
-		// scale parent
-		this.xform.incWidthBy(width);
-		this.xform.incHeightBy(height);
-		break;
-	case KNOBS.FOURTH:
-		// scale children
-		xform.incHeightBy(height);
-		// scale parent
-		this.xform.incHeightBy(height);
-		break;
-	case KNOBS.FIFTH:
-	// scale children
-		xform.incWidthBy(width);
-		xform.incHeightBy(height);
-		// scale parent
-		this.xform.incWidthBy(width);
-		this.xform.incHeightBy(height);
-		break;
-	case KNOBS.SIXTH:
-		// scale children
-		xform.incWidthBy(width);
-		// scale parent
-		this.xform.incWidthBy(width);
-		break;
-	case KNOBS.SEVENTH:
-		// scale children
-		xform.incWidthBy(width);
-		xform.incHeightBy(height);
-		// scale parent
-		this.xform.incWidthBy(width);
-		this.xform.incHeightBy(height);
-		break;
-	case KNOBS.LEFT_BAR:
-		// scale children
-		xform.incWidthBy(width);
-		// scale parent
-		this.xform.incWidthBy(width);
-		break;
-	case KNOBS.TOP_BAR:
-		// scale children
-		xform.incHeightBy(height);
-		// scale parent
-		this.xform.incHeightBy(height);
-		break;
-	case KNOBS.RIGHT_BAR:
-		// scale children
-		xform.incWidthBy(width);
-		// scale parent
-		this.xform.incWidthBy(width);
-		break;
-	case KNOBS.BOTTOM_BAR:
-		// scale children
-		xform.incHeightBy(height);
-		// scale parent
-		this.xform.incHeightBy(height);
-		break;
-	default:
-		break;
-}
-*/
