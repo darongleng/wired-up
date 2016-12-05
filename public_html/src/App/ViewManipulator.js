@@ -9,6 +9,8 @@ function ViewManipulator(myWorld) {
     this.lastClick = null;
     // current mouse move
     this.currentMouseMove = null;
+	// current angle of rotation
+	this.currentTheta = 0;
 }
 
 ViewManipulator.prototype.detectMouseDown = function (wcX, wcY) {
@@ -121,7 +123,7 @@ ViewManipulator.prototype.detectMouseMove = function (wcX, wcY, eventWhich) {
             this.mManipulator.translate(dx, dy);
         } else if (this.mManipulator.isRotating()) {
 			// rotate
-            console.log("rotating")
+            console.log("rotating");
 
             var xform = this.mManipulator.getXform();
             // manipulator position
@@ -135,18 +137,19 @@ ViewManipulator.prototype.detectMouseMove = function (wcX, wcY, eventWhich) {
             var dTheta = calculateAnchor(mouseMove_vector, rotating_knob_vector);
             // update the angle of manipulator and its container's scene nodes
             this.mManipulator.rotate(dTheta);
+			this.currentTheta += dTheta;
 
             this.lastClick[0] = wcX;
             this.lastClick[1] = wcY;
         } else if (this.mManipulator.isScaling()) {
 			// scale
 			console.log("scaling");
+			this.lastClick[0] = wcX;
+			this.lastClick[1] = wcY;
 
-			// var dx = this.currentMouseMove[0] - this.lastClick[0],
-			// 	dy = this.currentMouseMove[1] - this.lastClick[1];
-			//
-			// this.lastClick[0] += dx;
-			// this.lastClick[1] += dy;
+			// if (Math.abs(this.currentTheta) % 360 > 90 && Math.abs(this.currentTheta) % 360 < 270) {
+			// 	wcY = -wcY;
+			// }
 			this.mManipulator.scale(wcX, wcY);
         }
     } else { // if dragger object has started

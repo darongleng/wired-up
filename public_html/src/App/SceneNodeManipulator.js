@@ -89,6 +89,8 @@ SceneNodeManipulator.prototype.toScaling = function () {
 
 SceneNodeManipulator.prototype.notScaling = function () {
     this.scaling = false;
+	this.scaleKnob = null;
+	this.getXform().setSize(1, 1);
 };
 
 SceneNodeManipulator.prototype.isScaling = function () {
@@ -182,20 +184,22 @@ SceneNodeManipulator.prototype.scale = function(mouseX, mouseY) {
 	for (var i = 0; i < this.container.length; i++) {
 		var xform = this.container[i].getXform();
 		var curNodePos = xform.getPosition();
-		width = mouseX - curNodePos[0];
+		width = mouseX - curNodePos[0]; // dividing my 3 fixes width problem...
 		height = mouseY - curNodePos[1];
 		scaleNode(width, height, xform, this.getScaleKnob());
 	}
 	// scale SceneNodeManipulator
-	width = mouseX - this.getXform().getPosition()[0];
-	height = mouseY - this.getXform().getPosition()[1];
+	var manSize = this.getXform().getSize();
+	var manipulatorPos = this.getXform().getPosition();
+	width = mouseX - manipulatorPos[0]; // dividing my 3 fixes width problem...
+	height = mouseY - manipulatorPos[1];
 	scaleNode(width, height, this.getXform(), this.getScaleKnob());
 };
 
 // helper function for scaling
 function scaleNode(width, height, xform, scaleKnob) {
-	console.log("Scale Knob: " + scaleKnob);
-	console.log(xform);
+	// console.log(width);
+	// console.log(height);
 	switch (scaleKnob) {
 		case KNOBS.ZERO:
 			xform.setHeight(height);
@@ -236,22 +240,22 @@ function scaleNode(width, height, xform, scaleKnob) {
 			xform.setWidth(width);
 			xform.setHeight(height);
 			break;
-		case KNOBS.LEFT_BAR:
-			// set correct direction for width
-			width = -width;
-			xform.setWidth(width);
-			break;
-		case KNOBS.TOP_BAR:
-			xform.setHeight(height);
-			break;
-		case KNOBS.RIGHT_BAR:
-			xform.setWidth(width);
-			break;
-		case KNOBS.BOTTOM_BAR:
-			// set correct direction for height
-			height = -height;
-			xform.setHeight(height);
-			break;
+		// case KNOBS.LEFT_BAR:
+		// 	// set correct direction for width
+		// 	width = -width;
+		// 	xform.setWidth(width);
+		// 	break;
+		// case KNOBS.TOP_BAR:
+		// 	xform.setHeight(height);
+		// 	break;
+		// case KNOBS.RIGHT_BAR:
+		// 	xform.setWidth(width);
+		// 	break;
+		// case KNOBS.BOTTOM_BAR:
+		// 	// set correct direction for height
+		// 	height = -height;
+		// 	xform.setHeight(height);
+		// 	break;
 		default:
 			break;
 	}
