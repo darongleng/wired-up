@@ -14,6 +14,8 @@ function SceneNodeManipulator(shader) {
 	this.scaling = false;
 	this.scaleKnob = null;
 
+	this.minScaleThreshold = 0.5;
+
 }
 gEngine.Core.inheritPrototype(SceneNodeManipulator, SceneNode);
 
@@ -178,33 +180,69 @@ SceneNodeManipulator.prototype.rotate = function (dTheta) {
     this.mXform.incRotationByRad(dTheta);
 }
 
-SceneNodeManipulator.prototype.scale = function(dx, dy) {
-	var width = dx, height = dy;
+SceneNodeManipulator.prototype.scale = function(dx, dy, wcX, wcY) {
+	var width, height;
 	// scale children
 	for (var i = 0; i < this.container.length; i++) {
+		width = dx;
+		height = dy;
+
 		var xform = this.container[i].getXform();
-		var curNodePos = xform.getPosition();
+		// if (xform.getWidth() + width <= this.minScaleThreshold) { width = 0; }
+		// if (xform.getHeight() + height <= this.minScaleThreshold) { height = 0; }
 		scaleNode(width, height, xform, this.getScaleKnob());
 	}
 	// scale SceneNodeManipulator
+
+	// trying to differentiate manipulator's scale from children
+	// var manPos = this.getXform().getPosition();
+	// width = wcX - manPos[0];
+	// height = wcY - manPos[1];
+
+	// this will increase the manipulator's scale the same as the children
+	width = dx;
+	height = dy;
+	// if (this.getXform().getWidth() + width <= this.minScaleThreshold) { width = 0; }
+	// if (this.getXform().getHeight() + height <= this.minScaleThreshold) { height = 0; }
 	scaleNode(width, height, this.getXform(), this.getScaleKnob());
 };
 
 // helper function for scaling
 function scaleNode(width, height, xform, scaleKnob) {
-	// console.log(width);
-	 console.log(height);
+	//console.log(width);
+	//console.log(height);
+
+	//spare code
+	// xform.setWidth(width);
+	// xform.setHeight(height);
+	// xform.incWidthBy(width);
+	// xform.incHeightBy(height);
+
 	switch (scaleKnob) {
 		case KNOBS.ZERO:
 			xform.incHeightBy(height);
 			break;
 		case KNOBS.FIRST:
-			// xform.setWidth(width);
-			// xform.setHeight(height);
+			/*
+			if (manipulator) {
+				xform.setWidth(width);
+				xform.setHeight(height);
+			} else {
+				xform.incWidthBy(width);
+				xform.incHeightBy(height);
+			}
+			*/
 			xform.incWidthBy(width);
 			xform.incHeightBy(height);
 			break;
 		case KNOBS.SECOND:
+			/*
+			if (manipulator) {
+				xform.setWidth(width);
+			} else {
+				xform.incWidthBy(width);
+			}
+			*/
 			xform.incWidthBy(width);
 			break;
 		case KNOBS.THIRD:

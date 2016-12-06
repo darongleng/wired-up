@@ -113,10 +113,11 @@ ViewManipulator.prototype.detectMouseMove = function (wcX, wcY, eventWhich) {
 
 
     if (!this.dragger.isDragging()) {
+		var dx, dy;
         if (this.mManipulator.isMoving())  {
 			// translate
-            var dx = this.currentMouseMove[0] - this.lastClick[0],
-                dy = this.currentMouseMove[1] - this.lastClick[1];
+            dx = this.currentMouseMove[0] - this.lastClick[0];
+            dy = this.currentMouseMove[1] - this.lastClick[1];
 
             this.lastClick[0] += dx;
             this.lastClick[1] += dy;
@@ -144,20 +145,14 @@ ViewManipulator.prototype.detectMouseMove = function (wcX, wcY, eventWhich) {
         } else if (this.mManipulator.isScaling()) {
 			// scale
 			console.log("scaling");
-			// this.lastClick[0] = wcX;
-			// this.lastClick[1] = wcY;
 
-			// if (Math.abs(this.currentTheta) % 360 > 90 && Math.abs(this.currentTheta) % 360 < 270) {
-			// 	wcY = -wcY;
-			// }
-
-			var dx = this.currentMouseMove[0] - this.lastClick[0],
-				dy = this.currentMouseMove[1] - this.lastClick[1];
+			dx = this.currentMouseMove[0] - this.lastClick[0];
+			dy = this.currentMouseMove[1] - this.lastClick[1];
 
 			this.lastClick[0] += dx;
 			this.lastClick[1] += dy;
 
-			this.mManipulator.scale(dx, dy);
+			this.mManipulator.scale(dx, dy, wcX, wcY);
         }
     } else { // if dragger object has started
         this.dragger.drag(wcX, wcY);
