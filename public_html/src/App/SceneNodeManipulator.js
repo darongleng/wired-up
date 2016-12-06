@@ -178,83 +178,79 @@ SceneNodeManipulator.prototype.rotate = function (dTheta) {
     this.mXform.incRotationByRad(dTheta);
 }
 
-SceneNodeManipulator.prototype.scale = function(mouseX, mouseY) {
-	var width, height;
+SceneNodeManipulator.prototype.scale = function(dx, dy) {
+	var width = dx, height = dy;
 	// scale children
 	for (var i = 0; i < this.container.length; i++) {
 		var xform = this.container[i].getXform();
 		var curNodePos = xform.getPosition();
-		width = mouseX - curNodePos[0]; // dividing my 3 fixes width problem...
-		height = mouseY - curNodePos[1];
 		scaleNode(width, height, xform, this.getScaleKnob());
 	}
 	// scale SceneNodeManipulator
-	var manSize = this.getXform().getSize();
-	var manipulatorPos = this.getXform().getPosition();
-	width = mouseX - manipulatorPos[0]; // dividing my 3 fixes width problem...
-	height = mouseY - manipulatorPos[1];
 	scaleNode(width, height, this.getXform(), this.getScaleKnob());
 };
 
 // helper function for scaling
 function scaleNode(width, height, xform, scaleKnob) {
 	// console.log(width);
-	// console.log(height);
+	 console.log(height);
 	switch (scaleKnob) {
 		case KNOBS.ZERO:
-			xform.setHeight(height);
+			xform.incHeightBy(height);
 			break;
 		case KNOBS.FIRST:
-			xform.setWidth(width);
-			xform.setHeight(height);
+			// xform.setWidth(width);
+			// xform.setHeight(height);
+			xform.incWidthBy(width);
+			xform.incHeightBy(height);
 			break;
 		case KNOBS.SECOND:
-			xform.setWidth(width);
+			xform.incWidthBy(width);
 			break;
 		case KNOBS.THIRD:
 			// set correct direction for height
 			height = -height;
-			xform.setWidth(width);
-			xform.setHeight(height);
+			xform.incWidthBy(width);
+			xform.incHeightBy(height);
 			break;
 		case KNOBS.FOURTH:
 			// set correction direction for height
 			height = -height;
-			xform.setHeight(height);
+			xform.incHeightBy(height);
 			break;
 		case KNOBS.FIFTH:
 			// set correct direction for width & height
 			width = -width;
 			height = - height;
-			xform.setWidth(width);
-			xform.setHeight(height);
+			xform.incWidthBy(width);
+			xform.incHeightBy(height);
 			break;
 		case KNOBS.SIXTH:
 			// set correction direction for width
 			width = -width;
-			xform.setWidth(width);
+			xform.incWidthBy(width);
 			break;
 		case KNOBS.SEVENTH:
 			// set correct direction for width
 			width = -width;
-			xform.setWidth(width);
-			xform.setHeight(height);
+			xform.incWidthBy(width);
+			xform.incHeightBy(height);
 			break;
 		// case KNOBS.LEFT_BAR:
 		// 	// set correct direction for width
 		// 	width = -width;
-		// 	xform.setWidth(width);
+		// 	xform.incWidthBy(width);
 		// 	break;
 		// case KNOBS.TOP_BAR:
-		// 	xform.setHeight(height);
+		// 	xform.incHeightBy(height);
 		// 	break;
 		// case KNOBS.RIGHT_BAR:
-		// 	xform.setWidth(width);
+		// 	xform.incWidthBy(width);
 		// 	break;
 		// case KNOBS.BOTTOM_BAR:
 		// 	// set correct direction for height
 		// 	height = -height;
-		// 	xform.setHeight(height);
+		// 	xform.incHeightBy(height);
 		// 	break;
 		default:
 			break;

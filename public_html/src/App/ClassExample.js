@@ -26,7 +26,8 @@ function ClassExample() {
     // adding this.parentNode
     this.square = new SquareRenderable(this.mConstColorShader);
     this.square.setColor([0,0,1,1]);
-    this.square.getXform().setSize(4, 2);
+    //this.square.getXform().setSize(4, 2);
+    this.square.getXform().setSize(2, 2);
     this.square.getXform().setPosition(0, 0);
     this.square.getXform().setRotationInRad(Math.PI/2);
 
@@ -40,7 +41,8 @@ function ClassExample() {
     // adding this.node2
     this.square2 = new SquareRenderable(this.mConstColorShader);
     this.square2.setColor([1,0,0,1]);
-    this.square2.getXform().setSize(6, 2);
+    //this.square2.getXform().setSize(6, 2);
+    this.square2.getXform().setSize(2, 2);
     this.square2.getXform().setPosition(0, 0);
 
     this.node2 = new SceneNode(this.mConstColorShader, "Child1", true);
