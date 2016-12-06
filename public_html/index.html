@@ -57,19 +57,31 @@
                callback="mainTimerHandler"></css-timer>
 
     <br>
-    
+
     <div class="container">
         <h2>
             Hierarchical Modeling and Direct Manipulation
         </h2>
+
+        <div class="sidebar">
+            <h3>Shape Picker</h3>
+            <br>
+            <p>Current Shape: {{mSelectedShape}}</p>
+            <br>
+
+            <button class="button squareButton" ng-click="addSelectedShape('circle')">Circle</button>
+            <button class="button squareButton" ng-click="addSelectedShape('square')">Square</button>
+            <button class="button squareButton" ng-click="addSelectedShape('triangle')">Triangle</button>
+        </div>
+
+
         <div style="display: inline-block">
             Mouse Over
             <br>
-            <input class="textfield" type="text" ng-model="mMouseOver" size=50 readonly> 
+            <input class="textfield" type="text" ng-model="mMouseOver" size=50 readonly>
             <br>
             <br>
         </div>
-        
         <br>
         <canvas
             ng-mousemove="serviceMove($event)"

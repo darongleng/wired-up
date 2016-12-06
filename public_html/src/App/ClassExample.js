@@ -51,7 +51,37 @@ function ClassExample() {
 
 ClassExample.prototype.getAllSceneNodes = function() {
     return this.nodes;
-}
+};
+
+ClassExample.prototype.addNewSceneNode = function(shape) {
+    var newShape, newNode;
+    switch (shape) {
+        case 'circle':
+
+            break;
+
+        case 'square':
+            newShape = new SquareRenderable(this.mConstColorShader);
+            newShape.setColor([0,1,0,1]);
+            newShape.getXform().setSize(2, 2);
+            newShape.getXform().setPosition(0, 0);
+            break;
+
+        case 'triangle':
+
+            break;
+
+        default:
+            break;
+    }
+
+    newNode = new SceneNode(this.mConstColorShader, "New Node", true);
+    newNode.getXform().setPosition(0, 0);
+    newNode.addToSet(newShape);
+
+    this.nodes.push(newNode);
+    this.lastNode = newNode;
+};
 
 ClassExample.prototype.draw = function (camera) {
     // Step F: Starts the drawing by activating the camera
@@ -62,4 +92,3 @@ ClassExample.prototype.draw = function (camera) {
     }
 
 };
-

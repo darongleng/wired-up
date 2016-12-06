@@ -29,6 +29,7 @@ myModule.controller("MainCtrl", function ($scope) {
 
     $scope.mLastWCPosX = 0;
     $scope.mLastWCPosY = 0;
+    $scope.mSelectedShape = 'square';
 
     $scope.mView = new Camera(
                 [0, 0],         // wc Center
@@ -59,7 +60,7 @@ myModule.controller("MainCtrl", function ($scope) {
         $scope.mLastWCPosY = this.mView.mouseWCY(canvasY);
 
         $scope.mViewManipulator.detectMouseMove($scope.mLastWCPosX, $scope.mLastWCPosY, event.which);
-        
+
         $scope.mMouseOver = $scope.mLastWCPosX.toFixed(2).toString() + " " + $scope.mLastWCPosY.toFixed(2).toString();
         event.preventDefault();
     };
@@ -71,5 +72,10 @@ myModule.controller("MainCtrl", function ($scope) {
     $scope.serviceLeave = function (event) {
         $scope.mViewManipulator.detectMouseLeave();
     };
-    
+
+    $scope.addSelectedShape = function (shape) {
+        $scope.mMyWorld.addNewSceneNode(shape);
+        $scope.mSelectedShape = shape;
+    };
+
 });
