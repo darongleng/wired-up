@@ -57,7 +57,7 @@ ClassExample.prototype.addNewSceneNode = function(shape) {
     var newShape, newNode;
     switch (shape) {
         case 'circle':
-
+            return;
             break;
 
         case 'square':
@@ -68,10 +68,11 @@ ClassExample.prototype.addNewSceneNode = function(shape) {
             break;
 
         case 'triangle':
-
+            return;
             break;
 
         default:
+            return;
             break;
     }
 
