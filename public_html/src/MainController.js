@@ -78,4 +78,9 @@ myModule.controller("MainCtrl", function ($scope) {
         $scope.mSelectedShape = shape;
     };
 
+    $scope.combineSceneNodes = function() {
+        var container = $scope.mViewManipulator.mManipulator.getContainer();
+        $scope.mMyWorld.combineSceneNodes(container);
+    };
+
 });

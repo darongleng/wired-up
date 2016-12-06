@@ -130,6 +130,10 @@ SceneNodeManipulator.prototype.setContainer = function (newSceneNodes) {
 
 }
 
+SceneNodeManipulator.prototype.getContainer = function() {
+	return this.container;
+};
+
 // this function gets called only once through out a selected group of scene nodes
 SceneNodeManipulator.prototype.computeSelectedSceneNodePivot = function () {
     var center = this.mXform.getPosition(); // reference to mXform posttion vector

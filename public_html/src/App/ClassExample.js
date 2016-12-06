@@ -89,6 +89,15 @@ ClassExample.prototype.addNewSceneNode = function(shape) {
     this.lastNode = newNode;
 };
 
+ClassExample.prototype.combineSceneNodes = function (container) {
+    var newNode = new SceneNode(this.mConstColorShader, "New Node", true);
+    for (var i = 0; i < container.length; i++) {
+        newNode.addToSet(container[i]);
+    }
+    this.nodes.push(newNode);
+    this.lastNode = newNode;
+};
+
 ClassExample.prototype.draw = function (camera) {
     // Step F: Starts the drawing by activating the camera
     camera.setupViewProjection();
