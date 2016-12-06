@@ -57,7 +57,10 @@ ClassExample.prototype.addNewSceneNode = function(shape) {
     var newShape, newNode;
     switch (shape) {
         case 'circle':
-            return;
+            newShape = new CircleRenderable(this.mConstColorShader);
+            newShape.setColor([0,1,0,1]);
+            newShape.getXform().setSize(2, 2);
+            newShape.getXform().setPosition(0, 0);
             break;
 
         case 'square':
