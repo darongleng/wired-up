@@ -36,11 +36,20 @@ myModule.controller("MainCtrl", function ($scope) {
                 32,                // wc Wdith
                 [0, 0, 800, 600]);  // viewport: left, bottom, width, height
 
+
+    // Small overview camera
+    $scope.mSmallView = new Camera(
+                [0, 0],// wc Center
+                32, // wc width
+                [700, 500, 100, 100]);    // viewport: left, bottom, width, height
+    $scope.mSmallView.setBackgroundColor([0.9, 0.7, 0.7, 1]);
+
     $scope.mainTimerHandler = function () {
         // Step E: Clear the canvas
         gEngine.Core.clearCanvas([0, 0, 0, 1]);        // Clear the canvas
 
         $scope.mMyWorld.draw($scope.mView);
+        $scope.mMyWorld.draw($scope.mSmallView);
         $scope.mViewManipulator.draw($scope.mView);
     };
 
@@ -80,7 +89,17 @@ myModule.controller("MainCtrl", function ($scope) {
 
     $scope.combineSceneNodes = function() {
         var container = $scope.mViewManipulator.mManipulator.getContainer();
-        $scope.mMyWorld.combineSceneNodes(container);
+        if (container.length > 1) {
+            $scope.mMyWorld.combineSceneNodes(container);
+        }
+    };
+
+    $scope.deleteSceneNode = function() {
+        var container = $scope.mViewManipulator.mManipulator.getContainer();
+        if (container.length > 0) {
+            $scope.mMyWorld.clearNodes(container);
+        }
+        $scope.mViewManipulator.mManipulator.hide();
     };
 
 });

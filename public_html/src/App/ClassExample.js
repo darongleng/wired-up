@@ -92,10 +92,25 @@ ClassExample.prototype.addNewSceneNode = function(shape) {
 ClassExample.prototype.combineSceneNodes = function (container) {
     var newNode = new SceneNode(this.mConstColorShader, "New Node", true);
     for (var i = 0; i < container.length; i++) {
-        newNode.addToSet(container[i]);
+        newNode.addAsChild(container[i]);
+        // find this node in this.nodes and remove it
+        var index = this.nodes.indexOf(container[i]);
+        console.log(index);
+        if (index > -1) {
+            this.nodes.splice(index, 1);
+        }
     }
     this.nodes.push(newNode);
     this.lastNode = newNode;
+};
+
+ClassExample.prototype.clearNodes = function (container) {
+    for (var i = 0; i < container.length; i++) {
+        var index = this.nodes.indexOf(container[i]);
+        if (index > -1) {
+            this.nodes.splice(index, 1);
+        }
+    }
 };
 
 ClassExample.prototype.draw = function (camera) {
