@@ -38,18 +38,17 @@ myModule.controller("MainCtrl", function ($scope) {
 
 
     // Small overview camera
-    $scope.mSmallView = new Camera(
+    $scope.mSmallCamera = new Camera(
                 [0, 0],// wc Center
                 32, // wc width
                 [700, 500, 100, 100]);    // viewport: left, bottom, width, height
-    $scope.mSmallView.setBackgroundColor([0.9, 0.7, 0.7, 1]);
+    $scope.mSmallCamera.setBackgroundColor([0.9, 0.7, 0.7, 1]);
 
     $scope.mainTimerHandler = function () {
         // Step E: Clear the canvas
         gEngine.Core.clearCanvas([0, 0, 0, 1]);        // Clear the canvas
-
         $scope.mMyWorld.draw($scope.mView);
-        $scope.mMyWorld.draw($scope.mSmallView);
+        $scope.mMyWorld.draw($scope.mSmallCamera);
         $scope.mViewManipulator.draw($scope.mView);
     };
 
@@ -100,6 +99,52 @@ myModule.controller("MainCtrl", function ($scope) {
             $scope.mMyWorld.clearNodes(container);
         }
         $scope.mViewManipulator.mManipulator.hide();
+    };
+
+
+    // Scaling the main canvas!
+    //  from: http://stackoverflow.com/questions/2916081/zoom-in-on-a-point-using-scale-and-translate
+    var scale = 1;
+    var oldScale = 1;
+    var scaleChange = 0;
+    var zoomIntensity = 0.01;
+
+    var canvas = document.getElementById("GLCanvas");
+
+    canvas.onmousewheel = function (event) {
+
+        // prevent scrolling down the webpage
+        event.preventDefault();
+
+        // get mouse position in world coordinates
+        var canvasX = $scope.mCanvasMouse.getPixelXPos(event);
+        var canvasY = $scope.mCanvasMouse.getPixelYPos(event);
+        var wcX = $scope.mView.mouseWCX(canvasX);
+        var wcY = $scope.mView.mouseWCY(canvasY);
+
+        // calculate the zoom factor from scrolling
+        var wheel = event.wheelDelta/120;
+        var zoom = Math.exp(wheel * zoomIntensity);
+
+        // update the scale and calculate the difference between new and old scales
+        scale *= zoom;
+        scaleChange = scale - oldScale;
+        var width = $scope.mView.getWCWidth();
+        //console.log(scale);
+
+        // update the viewport width to the scale change + 1
+        $scope.mView.setWCWidth(width / (scaleChange + 1));
+
+        // recenter the viewport around the mouse position
+        var center = $scope.mView.getWCCenter();
+        center[0] += scaleChange * wcX;
+        center[1] += scaleChange * wcY;
+        $scope.mView.setWCCenter(center[0], center[1]);
+        // console.log("Scale Change: " + scaleChange);
+        // console.log("Center: " + center);
+
+        // update the current scale
+        oldScale = scale;
     };
 
 });

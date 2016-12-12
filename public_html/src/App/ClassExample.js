@@ -22,7 +22,7 @@ function ClassExample() {
     this.snManipualtor.getXform().setPosition(0, 2);
 
 
-
+    /*
     // adding this.parentNode
     this.square = new SquareRenderable(this.mConstColorShader);
     this.square.setColor([0,0,1,1]);
@@ -49,7 +49,9 @@ function ClassExample() {
     this.node2.getXform().setPosition(4, 2);
     this.node2.addToSet(this.square2);
 
-    this.nodes.push(this.node2);}
+    this.nodes.push(this.node2);
+    */
+}
 
 ClassExample.prototype.getAllSceneNodes = function() {
     return this.nodes;
