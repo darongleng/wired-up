@@ -87,10 +87,7 @@ myModule.controller("MainCtrl", function ($scope) {
     };
 
     $scope.combineSceneNodes = function() {
-        var container = $scope.mViewManipulator.mManipulator.getContainer();
-        if (container.length > 1) {
-            $scope.mMyWorld.combineSceneNodes(container);
-        }
+        $scope.mViewManipulator.combineSceneNodes();
     };
 
     $scope.deleteSceneNode = function() {
@@ -112,7 +109,7 @@ myModule.controller("MainCtrl", function ($scope) {
     var canvas = document.getElementById("GLCanvas");
 
     canvas.onmousewheel = function (event) {
-
+        console.log("here");
         // prevent scrolling down the webpage
         event.preventDefault();
 

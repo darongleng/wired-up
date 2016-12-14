@@ -162,6 +162,33 @@ ViewManipulator.prototype.detectMouseMove = function (wcX, wcY, eventWhich) {
 
 };
 
+ViewManipulator.prototype.combineSceneNodes = function () {
+    var container = this.mManipulator.container;
+
+    if (container.length <= 0 || container.length == 1)
+        return;
+
+    var xMin = Number.MAX_SAFE_INTEGER,
+        xMax = Number.MIN_SAFE_INTEGER,
+        yMin = Number.MAX_SAFE_INTEGER,
+        yMax = Number.MIN_SAFE_INTEGER;
+
+    for (var i = 0; i < container.length; i++) {
+        curNode = container[i];
+        bound = curNode.getBoundingPoints();
+        xMin = Math.min(xMin, bound.xMin);
+        xMax = Math.max(xMax, bound.xMax);
+        yMin = Math.min(yMin, bound.yMin);
+        yMax = Math.max(yMax, bound.yMax);
+    }
+
+    var width = xMax-xMin;
+    var height = yMax-yMin;
+    var center = [xMin+width/2, yMin+height/2];
+
+    this.mMyWorld.combineSceneNodes(container, center);
+}
+
 function calculateAnchor(vector1, vector2) {
 
     // calculate vector1_theta

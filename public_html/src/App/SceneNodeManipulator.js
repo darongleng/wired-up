@@ -1,3 +1,9 @@
+var KNOBS = {
+    ZERO: 0, FIRST: 1, SECOND: 2, THIRD: 3, FOURTH: 4, FIFTH: 5,
+    SIXTH: 6, SEVENTH: 7, ROTATION: 8, LEFT_BAR: 9, TOP_BAR: 10,
+    RIGHT_BAR: 11, BOTTOM_BAR: 12, ROTATION_BAR: 13
+};
+
 function SceneNodeManipulator(shader) {
 	SceneNode.call(this, shader, name);   // calling super class constructor
 
@@ -45,7 +51,6 @@ SceneNodeManipulator.prototype.show = function () {
 }
 
 SceneNodeManipulator.prototype.hide = function () {
-    console.log("hide")
     this.hidden = true;
     this.clearContainer();
     CanvasMouseSupport.CanvasMouse.toDefault();
@@ -114,8 +119,6 @@ SceneNodeManipulator.prototype.getRotatingKnobPosition = function () {
     var real_position = this.getRenderableAt(KNOBS.ROTATION).getXform().getPosition();
     var knob_position = [real_position[0], real_position[1]];
 
-    // should scale?
-
     // first: rotate, relative to parent
     var angle_rad = this.getXform().getRotationInRad();
     var rotationMat = mat2.create();
@@ -171,44 +174,30 @@ SceneNodeManipulator.prototype.translate = function (dx, dy) {
 }
 
 SceneNodeManipulator.prototype.rotate = function (dTheta) {
+    if (this.container.length > 1) // shouldn't be rotating multiple scene nodes
+        return;
+
     var center = this.mXform.getPosition(); // reference to mXform posttion vector
     center = [center[0], center[1]];
 
-    for (var i = 0; i < this.container.length; i++) {
-        var xform = this.container[i].getXform();
-        var curNodePos = xform.getPosition();
-        // xform.setPivot(center[0]-curNodePos[0], center[1]-curNodePos[1]);
-        xform.setPivot(0, 0);
-        xform.incRotationByRad(dTheta);
-    }
+    var xform = this.container[0].getXform();
+    var curNodePos = xform.getPosition();
+    xform.setPivot(0, 0);
+    xform.incRotationByRad(dTheta);
     this.mXform.incRotationByRad(dTheta);
 }
 
-SceneNodeManipulator.prototype.scale = function(dx, dy, wcX, wcY) {
-	var width, height;
-	// scale children
-	for (var i = 0; i < this.container.length; i++) {
-		width = dx;
-		height = dy;
+SceneNodeManipulator.prototype.scale = function(dx, dy) {
+    if (this.container.length > 1) // shouldn't be scaling multiple scene nodes
+        return;
 
-		var xform = this.container[i].getXform();
-		// if (xform.getWidth() + width <= this.minScaleThreshold) { width = 0; }
-		// if (xform.getHeight() + height <= this.minScaleThreshold) { height = 0; }
-		scaleNode(width, height, xform, this.getScaleKnob());
-	}
+	var width = dx;
+    var height = dy;
+    var xform = this.container[0].getXform();
+    // scale the child
+    scaleNode(width, height, xform, this.getScaleKnob());
 	// scale SceneNodeManipulator
-
-	// trying to differentiate manipulator's scale from children
-	// var manPos = this.getXform().getPosition();
-	// width = wcX - manPos[0];
-	// height = wcY - manPos[1];
-
-	// this will increase the manipulator's scale the same as the children
-	width = dx;
-	height = dy;
-	// if (this.getXform().getWidth() + width <= this.minScaleThreshold) { width = 0; }
-	// if (this.getXform().getHeight() + height <= this.minScaleThreshold) { height = 0; }
-	scaleNode(width, height, this.getXform(), this.getScaleKnob());
+    this.computeNewTransform();
 };
 
 // helper function for scaling
@@ -302,7 +291,7 @@ function scaleNode(width, height, xform, scaleKnob) {
 // this function detects if mouse position (in WC) touches any of the knobs
 // if it does return true, otherwise false
 SceneNodeManipulator.prototype.detectKnobCollision = function(wcX, wcY) {
-    if (this.hidden)
+    if (this.hidden || this.container.length > 1)
         return -1;
 
     var mouse = CanvasMouseSupport.CanvasMouse;
@@ -332,14 +321,20 @@ SceneNodeManipulator.prototype.detectKnobCollision = function(wcX, wcY) {
 // =====> OVERRIDE FUNTIONS <=====
 SceneNodeManipulator.prototype.draw = function(aCamera, parentMat) {
     var xfMat = this.mXform.getXform();
-    if (parentMat !== undefined)
-        mat4.multiply(xfMat, parentMat, xfMat);
+    // if (parentMat !== undefined)
+    //     mat4.multiply(xfMat, parentMat, xfMat);
 
     // Draw our own!
     if (!this.hidden && this.container !== null && this.container.length > 0) {
-        for (var i = this.mSet.length-1; i >= 0 ; i--) {
-            this.mSet[i].draw(aCamera, xfMat); // pass to each renderable
-        }
+        // if multiple scene nodes are selected, disable scaling and rotation knobs
+        if (this.container.length > 1)
+            for (var i = KNOBS.LEFT_BAR; i <= KNOBS.BOTTOM_BAR ; i++) 
+                this.mSet[i].draw(aCamera, xfMat); // pass to each renderable
+
+        // if only one scene node is selected, enable scaling and rotation knobs
+        else 
+            for (var i = this.mSet.length-1; i >= 0 ; i--) 
+                this.mSet[i].draw(aCamera, xfMat); // pass to each renderable   
     }
 
 }
@@ -454,9 +449,16 @@ SceneNodeManipulator.prototype.init = function (shader) {
     obj.setColor(this.color);
 }
 
+SceneNodeManipulator.prototype.adaptChildScale = function () {
+    if (this.container != null && this.container.length == 1) {
+        var child = this.container[0];
+        this.mXform.mScale[0] = child.mXform.mScale[0];
+        this.mXform.mScale[1] = child.mXform.mScale[1];
+    }
+}
+
 SceneNodeManipulator.prototype.computeNewTransform = function () {
 
-    console.log("computeNewTransform");
     this.mXform = new PivotedTransform();
 
     var curNode = null;
@@ -478,16 +480,6 @@ SceneNodeManipulator.prototype.computeNewTransform = function () {
     var width = xMax-xMin;
     var height = yMax-yMin;
     var center = [xMin+width/2, yMin+height/2];
-
-    // console.log("xMin: " + xMin);
-    // console.log("xMax: " + xMax);
-    // console.log("yMin: " + yMin);
-    // console.log("yMax: " + yMax);
-
-    // console.log("width: " + width);
-    // console.log("height: " + height);
-    console.log("center: " + center);
-
     this.mXform.setPosition(center[0], center[1]);
 
     var xform = null;
@@ -544,10 +536,5 @@ SceneNodeManipulator.prototype.computeNewTransform = function () {
     xform = this.getRenderableAt(KNOBS.ROTATION_BAR).getXform();
     xform.setPosition(0, height/2+(this.rotationKnobDistance/2));
     xform.setSize(this.barSize, 1);
+    
 }
-
-var KNOBS = {
-    ZERO: 0, FIRST: 1, SECOND: 2, THIRD: 3, FOURTH: 4, FIFTH: 5,
-    SIXTH: 6, SEVENTH: 7, ROTATION: 8, LEFT_BAR: 9, TOP_BAR: 10,
-    RIGHT_BAR: 11, BOTTOM_BAR: 12, ROTATION_BAR: 13
-};

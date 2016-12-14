@@ -91,9 +91,13 @@ ClassExample.prototype.addNewSceneNode = function(shape) {
     this.lastNode = newNode;
 };
 
-ClassExample.prototype.combineSceneNodes = function (container) {
+ClassExample.prototype.combineSceneNodes = function (container, center) {
     var newNode = new SceneNode(this.mConstColorShader, "New Node", true);
+    newNode.getXform().setPosition(center[0], center[1]);
+
     for (var i = 0; i < container.length; i++) {
+        var childPos = container[i].getXform().getPosition();
+        container[i].getXform().setPosition(center[0]-childPos[0], center[1]-childPos[1]);
         newNode.addAsChild(container[i]);
         // find this node in this.nodes and remove it
         var index = this.nodes.indexOf(container[i]);
@@ -102,6 +106,7 @@ ClassExample.prototype.combineSceneNodes = function (container) {
             this.nodes.splice(index, 1);
         }
     }
+    
     this.nodes.push(newNode);
     this.lastNode = newNode;
 };

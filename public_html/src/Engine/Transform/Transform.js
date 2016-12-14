@@ -16,10 +16,10 @@ function Transform() {
     this.mRotationInRad = 0.0;               // in radians!
 }
 
-// <editor-fold desc="Public Methods">
+Transform.prototype.scaleToDefault = function() {
+    this.mScale = vec2.fromValues(1, 1);     // this is the width (x) and height (y)    
+}
 
-//<editor-fold desc="Setter/Getter methods">
-// // <editor-fold desc="Position setters and getters ">
 Transform.prototype.setPosition = function (xPos, yPos) { this.setXPos(xPos); this.setYPos(yPos); };
 Transform.prototype.getPosition = function () { return this.mPosition; };
 Transform.prototype.getXPos = function () { return this.mPosition[0]; };
@@ -28,7 +28,6 @@ Transform.prototype.incXPosBy = function (delta) { this.mPosition[0] += delta; }
 Transform.prototype.getYPos = function () { return this.mPosition[1]; };
 Transform.prototype.setYPos = function (yPos) { this.mPosition[1] = yPos; };
 Transform.prototype.incYPosBy = function (delta) { this.mPosition[1] += delta; };
-//</editor-fold>
 
 // <editor-fold desc="size setters and getters">
 Transform.prototype.setSize = function (width, height) {
