@@ -89,10 +89,10 @@ ClassExample.prototype.detectMouseOverShape = function(wcX, wcY) {
     for (var i = 0; i < this.nodes.length; i++) {
         var curNode = this.nodes[i];
         if (curNode.contains([wcX, wcY])) {
-            return true;
+            return this.nodes[i];
         }
     }
-    return false;
+    return null;
 }
 
 // a helper function

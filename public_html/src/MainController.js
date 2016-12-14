@@ -48,7 +48,6 @@ myModule.controller("MainCtrl", function ($scope) {
     $scope.mSmallCamera.setBackgroundColor([0.9, 0.7, 0.7, 1]);
 
     $scope.mainTimerHandler = function () {
-        // Step E: Clear the canvas
         gEngine.Core.clearCanvas([0, 0, 0, 1]);        // Clear the canvas
         $scope.mMyWorld.draw($scope.mView);
         $scope.mMyWorld.draw($scope.mSmallCamera);
@@ -70,6 +69,13 @@ myModule.controller("MainCtrl", function ($scope) {
         $scope.mLastWCPosX = this.mView.mouseWCX(canvasX);
         $scope.mLastWCPosY = this.mView.mouseWCY(canvasY);
 
+        if ($scope.selectedShapeIndex != -1) {
+            var position = [$scope.mLastWCPosX, $scope.mLastWCPosY];
+            $scope.mViewManipulator.dragShapeIntoCanvas($scope.selectedShapeIndex, 
+                    $scope.mColor, $scope.mLastWCPosX, $scope.mLastWCPosY);
+            $scope.selectedShapeIndex = -1; // set back to negative one so that nothing will be created again
+        }
+
         $scope.mViewManipulator.detectMouseMove($scope.mLastWCPosX, $scope.mLastWCPosY, event.which);
 
         $scope.mMouseOver = $scope.mLastWCPosX.toFixed(2).toString() + " " + $scope.mLastWCPosY.toFixed(2).toString();
@@ -84,9 +90,9 @@ myModule.controller("MainCtrl", function ($scope) {
         $scope.mViewManipulator.detectMouseLeave();
     };
 
-    $scope.addSelectedShape = function (shape) {
-        $scope.mMyWorld.addNewSceneNode(shape, $scope.mColor);
-        $scope.mSelectedShape = shape;
+    $scope.selectedShapeIndex = -1;
+    $scope.changeShapeState = function (shapeIndex) {
+        $scope.selectedShapeIndex = parseInt(shapeIndex);
     };
 
     $scope.$watch("mColor", function () {
@@ -117,7 +123,6 @@ myModule.controller("MainCtrl", function ($scope) {
     var canvas = document.getElementById("GLCanvas");
 
     canvas.onmousewheel = function (event) {
-        console.log("here");
         // prevent scrolling down the webpage
         event.preventDefault();
 

@@ -62,10 +62,34 @@
     <br>
 
     <div class="container">
-        <h2>
-            Hierarchical Modeling and Direct Manipulation
-        </h2>
 
+        <div class="canvas-wrapper">
+
+            <div class="header">
+                <h2>
+                    Hierarchical Modeling and Direct Manipulation
+                </h2>
+                Mouse Over
+                <br>
+                <input class="textfield" type="text" ng-model="mMouseOver" size=50 readonly>
+                <br>
+                <br>
+            </div>
+            <br>
+
+            <canvas
+                ng-mousemove="serviceMove($event)"
+                ng-mousedown="serviceDown($event)"
+                ng-mouseup="serviceUp($event)"
+                ng-mouseleave="serviceLeave($event)"
+                id="GLCanvas" width="800" height="600">
+                <!-- GLCanvas is the area we will draw in: a 640x480 area. -->
+                Your browser does not support the HTML5 canvas.
+                <!-- this message will show only if WebGL clearing failed -->
+            </canvas>
+
+        </div>
+        
         <div class="sidebar">
             <h3>Shape Picker</h3>
             <br>
@@ -76,34 +100,18 @@
                           size="6"
                           style="background-color:{{mColor}}">
             <br>
-            <button class="button squareButton" ng-click="addSelectedShape('circle')">Circle</button>
-            <button class="button squareButton" ng-click="addSelectedShape('square')">Square</button>
-            <button class="button squareButton" ng-click="addSelectedShape('triangle')">Triangle</button>
+            <button class="button squareButton" ng-mousedown="changeShapeState('0')" 
+                    ng-mouseup="changeShapeState('-1')">Square</button>
+            <button class="button squareButton" ng-mousedown="changeShapeState('1')" 
+                    ng-mouseup="changeShapeState('-1')">Circle</button>
+            <button class="button squareButton" ng-mousedown="changeShapeState('2')" 
+                    ng-mouseup="changeShapeState('-1')">Triangle</button>
             <button class="button squareButton" ng-click="combineSceneNodes()">
                 Combine Into One SceneNode
             </button>
             <button class="button squareButton" ng-click="deleteSceneNode()">Delete Node</button>
         </div>
 
-
-        <div style="display: inline-block">
-            Mouse Over
-            <br>
-            <input class="textfield" type="text" ng-model="mMouseOver" size=50 readonly>
-            <br>
-            <br>
-        </div>
-        <br>
-        <canvas
-            ng-mousemove="serviceMove($event)"
-            ng-mousedown="serviceDown($event)"
-            ng-mouseup="serviceUp($event)"
-            ng-mouseleave="serviceLeave($event)"
-            id="GLCanvas" width="800" height="600">
-            <!-- GLCanvas is the area we will draw in: a 640x480 area. -->
-            Your browser does not support the HTML5 canvas.
-            <!-- this message will show only if WebGL clearing failed -->
-        </canvas>
     </div>
 
     </body>

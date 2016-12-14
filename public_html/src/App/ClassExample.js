@@ -57,44 +57,41 @@ ClassExample.prototype.getAllSceneNodes = function() {
     return this.nodes;
 };
 
-ClassExample.prototype.addNewSceneNode = function(shape, hexColor) {
+ClassExample.prototype.addNewSceneNode = function(shape, hexColor, wcX, wcY) {
+    console.log("adding new scene node");
     var newShape, newNode;
-    var rgbColor = [0, 0, 0, 1];
+    var rgbColor = [0, 0, 0, 1]; // dummy value
     this.setColorByHex(hexColor, rgbColor);
     switch (shape) {
-        case 'circle':
-            newShape = new CircleRenderable(this.mConstColorShader);
-            newShape.setColor(rgbColor);
-            newShape.getXform().setSize(2, 2);
-            newShape.getXform().setPosition(0, 0);
-            break;
-
-        case 'square':
+        case 0:
             newShape = new SquareRenderable(this.mConstColorShader);
             newShape.setColor(rgbColor);
             newShape.getXform().setSize(2, 2);
             newShape.getXform().setPosition(0, 0);
             break;
 
-        case 'triangle':
-            return;
+        case 1:
+            newShape = new CircleRenderable(this.mConstColorShader);
+            newShape.setColor(rgbColor);
+            newShape.getXform().setSize(2, 2);
+            newShape.getXform().setPosition(0, 0);
             break;
 
         default:
             return;
-            break;
     }
 
-    newNode = new SceneNode(this.mConstColorShader, "New Node", true);
-    newNode.getXform().setPosition(0, 0);
+    newNode = new SceneNode(this.mConstColorShader, "New Node", false);
+    newNode.getXform().setPosition(wcX, wcY);
     newNode.addToSet(newShape);
 
     this.nodes.push(newNode);
     this.lastNode = newNode;
+    return newNode;
 };
 
 ClassExample.prototype.combineSceneNodes = function (container, center) {
-    var newNode = new SceneNode(this.mConstColorShader, "New Node", true);
+    var newNode = new SceneNode(this.mConstColorShader, "New Node", false);
     newNode.getXform().setPosition(center[0], center[1]);
 
     for (var i = 0; i < container.length; i++) {
@@ -137,7 +134,6 @@ ClassExample.prototype.setColorByHex = function (hex, c) {
 ClassExample.prototype.setCurrentObjColor = function (hex, container) {
     for (var i = 0; i < container.length; i++) {
         var children = container[i].mSet;
-        console.log(container[i]);
         for (var j = 0; j < children.length; j++) {
             this.setColorByHex(hex, children[j].getColor());
         }

@@ -1,10 +1,22 @@
 
 body {
 	background-color: grey;
+    margin: 0;
+    -webkit-user-select: none; 
+    user-select:none;
 }
+
 .container {
-	text-align: center;
 	font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+}
+
+.canvas-wrapper {
+    position: relative;
+    padding-left: 200px;
+}
+.header {
+    display: inline-block;
+    height: 100px;
 }
 
 .textfield {
@@ -13,9 +25,10 @@ body {
 }
 
 .sidebar {
+    text-align: center;
     position:absolute;
     top:0; bottom:0; left:0;
-    width:200px;
+    width: 200px;
     background:#9e7676;
 	font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
 }

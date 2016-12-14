@@ -1,16 +1,25 @@
+
+var Shape = {
+    SQUARE: 0,
+    CIRCLE: 1
+}
+
 function ViewManipulator(myWorld) {
 	this.mMyWorld = myWorld;
     this.dragger = new Dragger(myWorld.mConstColorShader);
     this.mManipulator = new SceneNodeManipulator(myWorld.mConstColorShader);
+    this.lastClick = null; // first click, dummy value
+    this.currentMouseMove = [0,0]; // current mouse move, dummy value
+	this.currentTheta = 0; // current angle of rotation
+    this.clickedSceneNode = null; // holds a clicked-on scene node--not selected
 
-    this.selectedSceneNodes = null;
+    this.sceneNodeShape = 0; 
+}
 
-    // first click
-    this.lastClick = null;
-    // current mouse move
-    this.currentMouseMove = null;
-	// current angle of rotation
-	this.currentTheta = 0;
+ViewManipulator.prototype.dragShapeIntoCanvas = function (shapeIndex, hexColor, wcX, wcY) {
+    this.sceneNodeShape = shapeIndex; 
+    var newNode = this.mMyWorld.addNewSceneNode(shapeIndex, hexColor, wcX, wcY);
+    this.clickedSceneNode = newNode;
 }
 
 ViewManipulator.prototype.detectMouseDown = function (wcX, wcY) {
@@ -18,18 +27,25 @@ ViewManipulator.prototype.detectMouseDown = function (wcX, wcY) {
     this.lastClick = [wcX, wcY];
 
     var mouseOverSelectedShape = this.mManipulator.detectMouseOverShape(wcX, wcY);
+    this.clickedSceneNode = this.mMyWorld.detectMouseOverShape(wcX, wcY); // detect if mouse click
+                                                                    // was on unselected scene node
+    if (!mouseOverSelectedShape && this.clickedSceneNode != null) {
+        this.mManipulator.hide();
+        return;                                                                
+    } else { // if there's some selected shape
+        this.clickedSceneNode = null; // ensure clickdSceneNode is null
+    }
+
     var knob = this.mManipulator.detectKnobCollision(wcX, wcY);
 
     // check if mouse is click on manipulator's container's scene nodes
     if (mouseOverSelectedShape) {
         this.mManipulator.toMoving();
     } else {
-		console.log("Knob: " + knob);
         switch (knob) { // check if mouse is clicked on any known knob
             case KNOBS.ROTATION:
                 this.mManipulator.toRotating();
                 break;
-
 			case KNOBS.ZERO:
 				this.mManipulator.toScaling();
 				this.mManipulator.setScaleKnob(knob);
@@ -87,17 +103,15 @@ ViewManipulator.prototype.detectMouseDown = function (wcX, wcY) {
 
         var transform = new Transform();
         transform.setPosition(wcX, wcY);
-        this.selectedSceneNodes = this.mMyWorld.getSceneNodesInArea( transform );
-        this.mManipulator.setContainer(this.selectedSceneNodes);
+        var selectedSceneNodes = this.mMyWorld.getSceneNodesInArea( transform );
+        this.mManipulator.setContainer(selectedSceneNodes);
     }
 
 };
 
 ViewManipulator.prototype.detectMouseMove = function (wcX, wcY, eventWhich) {
-
     this.currentMouseMove = [wcX, wcY];
-
-    var mouseOverShape = this.mMyWorld.detectMouseOverShape(wcX, wcY);
+    var mouseOverShape = this.mMyWorld.detectMouseOverShape(wcX, wcY) == null ? false : true;
     var knob = this.mManipulator.detectKnobCollision(wcX, wcY);
 
     if (knob != -1) {
@@ -113,19 +127,22 @@ ViewManipulator.prototype.detectMouseMove = function (wcX, wcY, eventWhich) {
 
 
     if (!this.dragger.isDragging()) {
-		var dx, dy;
-        if (this.mManipulator.isMoving())  {
-			// translate
-            dx = this.currentMouseMove[0] - this.lastClick[0];
+        if (this.lastClick == null)  // so that when dragging into canvas properly
+            this.lastClick = [wcX, wcY];
+        
+		var dx = this.currentMouseMove[0] - this.lastClick[0],
             dy = this.currentMouseMove[1] - this.lastClick[1];
+        this.lastClick[0] += dx;
+        this.lastClick[1] += dy;
 
-            this.lastClick[0] += dx;
-            this.lastClick[1] += dy;
+        if (this.mManipulator.isMoving())  {
+            // translate
             this.mManipulator.translate(dx, dy);
-        } else if (this.mManipulator.isRotating()) {
-			// rotate
-            console.log("rotating");
-
+        } else if (this.clickedSceneNode != null) {
+            var xform = this.clickedSceneNode.getXform();
+            xform.incXPosBy(dx);
+            xform.incYPosBy(dy);
+        } else if (this.mManipulator.isRotating()) { // rotate
             var xform = this.mManipulator.getXform();
             // manipulator position
             var manipulator_position = xform.getPosition();
@@ -139,25 +156,15 @@ ViewManipulator.prototype.detectMouseMove = function (wcX, wcY, eventWhich) {
             // update the angle of manipulator and its container's scene nodes
             this.mManipulator.rotate(dTheta);
 			this.currentTheta += dTheta;
-
             this.lastClick[0] = wcX;
             this.lastClick[1] = wcY;
-        } else if (this.mManipulator.isScaling()) {
-			// scale
-			console.log("scaling");
-
-			dx = this.currentMouseMove[0] - this.lastClick[0];
-			dy = this.currentMouseMove[1] - this.lastClick[1];
-
-			this.lastClick[0] += dx;
-			this.lastClick[1] += dy;
-
-			this.mManipulator.scale(dx, dy, wcX, wcY);
+        } else if (this.mManipulator.isScaling()) { // scale
+            this.mManipulator.scale(dx, dy);
         }
     } else { // if dragger object has started
         this.dragger.drag(wcX, wcY);
-        this.selectedSceneNodes = this.mMyWorld.getSceneNodesInArea( this.dragger.getTransformObject() );
-        this.mManipulator.setContainer(this.selectedSceneNodes);
+        var selectedSceneNodes = this.mMyWorld.getSceneNodesInArea( this.dragger.getTransformObject() );
+        this.mManipulator.setContainer(selectedSceneNodes);
     }
 
 };
@@ -217,11 +224,15 @@ ViewManipulator.prototype.detectMouseUp = function () {
     this.mManipulator.notMoving();
     this.mManipulator.notRotating();
 	this.mManipulator.notScaling();
+    if (this.clickedSceneNode != null) 
+        this.mManipulator.setContainer([this.clickedSceneNode]);
     this.mManipulator.show();
+    this.clickedSceneNode = null;
 }
 
 ViewManipulator.prototype.detectMouseLeave = function () {
     console.log("mouse leave");
+    this.lastClick = null;
 }
 
 ViewManipulator.prototype.draw = function (camera) {
