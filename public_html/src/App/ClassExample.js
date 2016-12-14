@@ -57,22 +57,24 @@ ClassExample.prototype.getAllSceneNodes = function() {
     return this.nodes;
 };
 
-ClassExample.prototype.addNewSceneNode = function(shape, hexColor) {
+ClassExample.prototype.addNewSceneNode = function(shape, hexColor, dimensions, wcCenter) {
     var newShape, newNode;
     var rgbColor = [0, 0, 0, 1];
+    var width = dimensions[0] * 0.05;
+    var height = dimensions[1] * 0.05;
     this.setColorByHex(hexColor, rgbColor);
     switch (shape) {
         case 'circle':
             newShape = new CircleRenderable(this.mConstColorShader);
             newShape.setColor(rgbColor);
-            newShape.getXform().setSize(2, 2);
+            newShape.getXform().setSize(width, height);
             newShape.getXform().setPosition(0, 0);
             break;
 
         case 'square':
             newShape = new SquareRenderable(this.mConstColorShader);
             newShape.setColor(rgbColor);
-            newShape.getXform().setSize(2, 2);
+            newShape.getXform().setSize(width, height);
             newShape.getXform().setPosition(0, 0);
             break;
 
@@ -86,7 +88,7 @@ ClassExample.prototype.addNewSceneNode = function(shape, hexColor) {
     }
 
     newNode = new SceneNode(this.mConstColorShader, "New Node", true);
-    newNode.getXform().setPosition(0, 0);
+    newNode.getXform().setPosition(wcCenter[0], wcCenter[1]);
     newNode.addToSet(newShape);
 
     this.nodes.push(newNode);
@@ -108,7 +110,7 @@ ClassExample.prototype.combineSceneNodes = function (container, center) {
             this.nodes.splice(index, 1);
         }
     }
-    
+
     this.nodes.push(newNode);
     this.lastNode = newNode;
 };
