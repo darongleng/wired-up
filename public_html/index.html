@@ -13,6 +13,9 @@
         <script type="text/javascript" src="src/lib/Angular.js"></script>
         <script type="text/javascript" src="src/lib/gl-matrix.js"></script>
         <script type="text/javascript" src="src/lib/webgl-obj-loader.js"></script>
+        <!-- bootstrap-colorpicker-module -->
+        <link rel="stylesheet" href="src/lib/css/colorpicker.css"/>
+        <script type="text/javascript" src="src/lib/bootstrap-colorpicker-module.min.js"></script>
 
         <!-- Engine code: Graphics Support -->
         <!-- Core of Engine -->
@@ -68,7 +71,11 @@
             <br>
             <p>Current Shape: {{mSelectedShape}}</p>
             <br>
-
+            Color: <input colorpicker type="text"
+                          ng-model="mColor"
+                          size="6"
+                          style="background-color:{{mColor}}">
+            <br>
             <button class="button squareButton" ng-click="addSelectedShape('circle')">Circle</button>
             <button class="button squareButton" ng-click="addSelectedShape('square')">Square</button>
             <button class="button squareButton" ng-click="addSelectedShape('triangle')">Triangle</button>

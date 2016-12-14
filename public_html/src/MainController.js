@@ -10,7 +10,8 @@
 "use strict";
 
 // Creates the "backend" logical support for appMyExample
-var myModule = angular.module("appMyExample", ["CSS450Timer", "CSS450Slider", "CSS450Xform"]);
+var myModule = angular.module("appMyExample",
+            ["CSS450Timer", "CSS450Slider", "CSS450Xform", "colorpicker.module"]);
 
 // registers the constructor for the controller
 // NOTE: the constructor is only called _AFTER_ the </body> tag is encountered
@@ -26,6 +27,8 @@ myModule.controller("MainCtrl", function ($scope) {
     // this is the model
     $scope.mMyWorld = new ClassExample();
     $scope.mViewManipulator = new ViewManipulator($scope.mMyWorld);
+
+    $scope.mColor = "#ff0f0f";
 
     $scope.mLastWCPosX = 0;
     $scope.mLastWCPosY = 0;
@@ -82,9 +85,14 @@ myModule.controller("MainCtrl", function ($scope) {
     };
 
     $scope.addSelectedShape = function (shape) {
-        $scope.mMyWorld.addNewSceneNode(shape);
+        $scope.mMyWorld.addNewSceneNode(shape, $scope.mColor);
         $scope.mSelectedShape = shape;
     };
+
+    $scope.$watch("mColor", function () {
+        var container = $scope.mViewManipulator.mManipulator.getContainer();
+        $scope.mMyWorld.setCurrentObjColor($scope.mColor, container);
+    });
 
     $scope.combineSceneNodes = function() {
         $scope.mViewManipulator.combineSceneNodes();
