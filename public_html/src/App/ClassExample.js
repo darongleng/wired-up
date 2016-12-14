@@ -17,45 +17,21 @@ function ClassExample() {
     this.nodes = []; // this is list is used to stored Scene Nodes
     this.lastNode = null; // this indicates the last create scene node
 
-    // snManipualtor, sceneNodeManipulator
-    this.snManipualtor = new SceneNodeManipulator(this.mConstColorShader);
-    this.snManipualtor.getXform().setPosition(0, 2);
-
-
-    /*
-    // adding this.parentNode
-    this.square = new SquareRenderable(this.mConstColorShader);
-    this.square.setColor([0,0,1,1]);
-    //this.square.getXform().setSize(4, 2);
-    this.square.getXform().setSize(2, 2);
-    this.square.getXform().setPosition(0, 0);
-    this.square.getXform().setRotationInRad(Math.PI/2);
-
-    this.parentNode = new SceneNode(this.mConstColorShader, "Root", true);
-    this.parentNode.addToSet(this.square);
-    this.parentNode.getXform().setPosition(-4, 2);
-
-    this.nodes.push(this.parentNode);
-
-
-    // adding this.node2
-    this.square2 = new SquareRenderable(this.mConstColorShader);
-    this.square2.setColor([1,0,0,1]);
-    //this.square2.getXform().setSize(6, 2);
-    this.square2.getXform().setSize(2, 2);
-    this.square2.getXform().setPosition(0, 0);
-
-    this.node2 = new SceneNode(this.mConstColorShader, "Child1", true);
-    this.node2.getXform().setPosition(4, 2);
-    this.node2.addToSet(this.square2);
-
-    this.nodes.push(this.node2);
-    */
+    this.guideBox = new SquareBorder(this.mConstColorShader);
+    this.guideBox.setColor([66/255, 244/255, 179/255, 0.3]); //rgb(66, 244, 179)
 }
 
 ClassExample.prototype.getAllSceneNodes = function() {
     return this.nodes;
 };
+
+ClassExample.prototype.setGuidBoxSize = function (width, height) {
+    this.guideBox.getXform().setSize(width, height);
+}
+
+ClassExample.prototype.setGuidBoxPosition = function (wcX, wcY) {
+    this.guideBox.getXform().setPosition(wcX, wcY);
+}
 
 ClassExample.prototype.addNewSceneNode = function(shape, hexColor, wcX, wcY) {
     var newShape, newNode;
@@ -117,7 +93,7 @@ ClassExample.prototype.clearNodes = function (container) {
     }
 };
 
-ClassExample.prototype.draw = function (camera) {
+ClassExample.prototype.draw = function (camera, enableGuideBox) {
     // Step F: Starts the drawing by activating the camera
     camera.setupViewProjection();
 
@@ -125,4 +101,7 @@ ClassExample.prototype.draw = function (camera) {
         this.nodes[i].draw(camera);
     }
 
+    enableGuideBox = enableGuideBox == null ? false : enableGuideBox;
+    if (enableGuideBox)
+        this.guideBox.draw(camera);
 };

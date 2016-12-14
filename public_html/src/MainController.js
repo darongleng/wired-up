@@ -36,21 +36,33 @@ myModule.controller("MainCtrl", function ($scope) {
 
     $scope.mView = new Camera(
                 [0, 0],         // wc Center
-                32,                // wc Wdith
+                40,                // wc Wdith
                 [0, 0, 800, 600]);  // viewport: left, bottom, width, height
 
 
     // Small overview camera
     $scope.mSmallCamera = new Camera(
                 [0, 0],// wc Center
-                32, // wc width
+                80,    // wc width
                 [700, 500, 100, 100]);    // viewport: left, bottom, width, height
+
     $scope.mSmallCamera.setBackgroundColor([0.9, 0.7, 0.7, 1]);
 
     $scope.mainTimerHandler = function () {
         gEngine.Core.clearCanvas([0, 0, 0, 1]);        // Clear the canvas
-        $scope.mMyWorld.draw($scope.mView);
-        $scope.mMyWorld.draw($scope.mSmallCamera);
+        // draw big camera with guide box disabled
+        $scope.mMyWorld.draw($scope.mView, false); // false for disabling guidebox
+        // draw small camera with guide box enabled
+        // 1.set guide box size
+        var guideBoxWidth = $scope.mView.getWCWidth();
+        var guideBoxHeight = $scope.mView.getWCHeight();
+        $scope.mMyWorld.setGuidBoxSize(guideBoxWidth, guideBoxHeight);
+        // 3.set guide box position
+        var guideBoxCenter = $scope.mView.getWCCenter();
+        console.log("center: " + guideBoxCenter);
+        $scope.mMyWorld.setGuidBoxPosition(guideBoxCenter[0], guideBoxCenter[1]);
+        // 4.draw small camera
+        $scope.mMyWorld.draw($scope.mSmallCamera, true); // true for enabling guidebox
         $scope.mViewManipulator.draw($scope.mView);
     };
 
