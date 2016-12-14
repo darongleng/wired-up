@@ -112,6 +112,18 @@ myModule.controller("MainCtrl", function ($scope) {
         $scope.mViewManipulator.mManipulator.hide();
     };
 
+    var scrollModes = ["translate", "zoom"];
+    var currentMode = 0;
+    $scope.scrollMode = "translate";
+    $scope.oppositeScrollMode = "zoom";
+    $scope.changeScrollMode = function() {
+        currentMode = (currentMode + 1) % scrollModes.length;
+        $scope.scrollMode = scrollModes[currentMode];
+        $scope.oppositeScrollMode = scrollModes[(currentMode + 1) % scrollModes.length];
+    };
+
+
+
 
     // Scaling the main canvas!
     //  from: http://stackoverflow.com/questions/2916081/zoom-in-on-a-point-using-scale-and-translate
@@ -132,29 +144,40 @@ myModule.controller("MainCtrl", function ($scope) {
         var wcX = $scope.mView.mouseWCX(canvasX);
         var wcY = $scope.mView.mouseWCY(canvasY);
 
-        // calculate the zoom factor from scrolling
-        var wheel = event.wheelDelta/120;
-        var zoom = Math.exp(wheel * zoomIntensity);
-
-        // update the scale and calculate the difference between new and old scales
-        scale *= zoom;
-        scaleChange = scale - oldScale;
-        var width = $scope.mView.getWCWidth();
-        //console.log(scale);
-
-        // update the viewport width to the scale change + 1
-        $scope.mView.setWCWidth(width / (scaleChange + 1));
-
-        // recenter the viewport around the mouse position
         var center = $scope.mView.getWCCenter();
-        center[0] += scaleChange * wcX;
-        center[1] += scaleChange * wcY;
-        $scope.mView.setWCCenter(center[0], center[1]);
-        // console.log("Scale Change: " + scaleChange);
-        // console.log("Center: " + center);
 
-        // update the current scale
-        oldScale = scale;
+        if ($scope.scrollMode === "zoom") {
+            // calculate the zoom factor from scrolling
+            var wheel = event.wheelDelta/120;
+            var zoom = Math.exp(wheel * zoomIntensity);
+
+            // update the scale and calculate the difference between new and old scales
+            scale *= zoom;
+            scaleChange = scale - oldScale;
+            var width = $scope.mView.getWCWidth();
+            //console.log(scale);
+
+            // update the viewport width to the scale change + 1
+            $scope.mView.setWCWidth(width / (scaleChange + 1));
+
+            // recenter the viewport around the mouse position
+            center[0] += scaleChange * wcX;
+            center[1] += scaleChange * wcY;
+            $scope.mView.setWCCenter(center[0], center[1]);
+            // console.log("Scale Change: " + scaleChange);
+            // console.log("Center: " + center);
+
+            // update the current scale
+            oldScale = scale;
+        } else {
+            // get horizontal and vertical scroll values
+            var wheelX = event.deltaX/120;
+            var wheelY = -event.deltaY/120;
+            // recenter the viewport around the mouse position
+            center[0] += wheelX;
+            center[1] += wheelY;
+            $scope.mView.setWCCenter(center[0], center[1]);
+        }
     };
 
 });

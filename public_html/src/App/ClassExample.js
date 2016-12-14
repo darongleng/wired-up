@@ -84,7 +84,6 @@ ClassExample.prototype.addNewSceneNode = function(shape, hexColor, wcX, wcY) {
     newNode = new SceneNode(this.mConstColorShader, "New Node", false);
     newNode.getXform().setPosition(wcX, wcY);
     newNode.addToSet(newShape);
-
     this.nodes.push(newNode);
     this.lastNode = newNode;
     return newNode;
@@ -105,7 +104,7 @@ ClassExample.prototype.combineSceneNodes = function (container, center) {
             this.nodes.splice(index, 1);
         }
     }
-    
+
     this.nodes.push(newNode);
     this.lastNode = newNode;
 };
