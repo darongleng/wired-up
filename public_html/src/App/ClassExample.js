@@ -58,10 +58,9 @@ ClassExample.prototype.getAllSceneNodes = function() {
 };
 
 ClassExample.prototype.addNewSceneNode = function(shape, hexColor, wcX, wcY) {
-    console.log("adding new scene node");
     var newShape, newNode;
-    var rgbColor = [0, 0, 0, 1]; // dummy value
-    this.setColorByHex(hexColor, rgbColor);
+    var rgbColor = hexToRGBA(hexColor);
+    
     switch (shape) {
         case 0:
             newShape = new SquareRenderable(this.mConstColorShader);
@@ -114,27 +113,6 @@ ClassExample.prototype.clearNodes = function (container) {
         var index = this.nodes.indexOf(container[i]);
         if (index > -1) {
             this.nodes.splice(index, 1);
-        }
-    }
-};
-
-// hex is a hexString
-// Ref: http://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
-ClassExample.prototype.setColorByHex = function (hex, c) {
-    var inInt = parseInt(hex.substring(1), 16);  // to get rid of "#"
-    var r = (inInt >> 16) & 255;
-    var g = (inInt >> 8) & 255;
-    var b = inInt & 255;
-    c[0] = r / 255.0;
-    c[1] = g / 255.0;
-    c[2] = b / 255.0;
-};
-
-ClassExample.prototype.setCurrentObjColor = function (hex, container) {
-    for (var i = 0; i < container.length; i++) {
-        var children = container[i].mSet;
-        for (var j = 0; j < children.length; j++) {
-            this.setColorByHex(hex, children[j].getColor());
         }
     }
 };

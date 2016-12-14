@@ -22,6 +22,18 @@ ViewManipulator.prototype.dragShapeIntoCanvas = function (shapeIndex, hexColor, 
     this.clickedSceneNode = newNode;
 }
 
+ViewManipulator.prototype.changeColorOfSelectedNodes = function(hexColor) {
+    var container = this.mManipulator.getContainer();
+    var rgba = hexToRGBA(hexColor);
+
+    for (var i = 0; i < container.length; i++) {
+        var children = container[i].mSet;
+        for (var j = 0; j < children.length; j++) {
+            children[j].setColor(rgba);
+        }
+    }
+}
+
 ViewManipulator.prototype.detectMouseDown = function (wcX, wcY) {
     console.log("mouse down");
     this.lastClick = [wcX, wcY];

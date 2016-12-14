@@ -96,8 +96,7 @@ myModule.controller("MainCtrl", function ($scope) {
     };
 
     $scope.$watch("mColor", function () {
-        var container = $scope.mViewManipulator.mManipulator.getContainer();
-        $scope.mMyWorld.setCurrentObjColor($scope.mColor, container);
+        $scope.mViewManipulator.changeColorOfSelectedNodes($scope.mColor);
     });
 
     $scope.combineSceneNodes = function() {
