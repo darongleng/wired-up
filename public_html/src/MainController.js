@@ -16,8 +16,13 @@ var myModule = angular.module("appMyExample",
 // registers the constructor for the controller
 // NOTE: the constructor is only called _AFTER_ the </body> tag is encountered
 //       this code does NOT run until the end of loading the HTML page
-
 myModule.controller("MainCtrl", function ($scope) {
+
+    var canvas = document.getElementById("GLCanvas");
+    var canvasWidth = window.innerWidth-250,
+        canvasHeight = window.innerHeight-100;
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
 
     // Initialize the graphics system
     gEngine.Core.initializeWebGL('GLCanvas');
@@ -37,14 +42,14 @@ myModule.controller("MainCtrl", function ($scope) {
     $scope.mView = new Camera(
                 [0, 0],         // wc Center
                 40,                // wc Wdith
-                [0, 0, 800, 600]);  // viewport: left, bottom, width, height
+                [0, 0, canvasWidth, canvasHeight]);  // viewport: left, bottom, width, height
 
 
     // Small overview camera
     $scope.mSmallCamera = new Camera(
                 [0, 0],// wc Center
                 80,    // wc width
-                [700, 500, 100, 100]);    // viewport: left, bottom, width, height
+                [canvasWidth-100, canvasHeight-100, 100, 100]);    // viewport: left, bottom, width, height
 
     $scope.mSmallCamera.setBackgroundColor([0.9, 0.7, 0.7, 1]);
 

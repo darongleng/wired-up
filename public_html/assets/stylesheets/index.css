@@ -1,8 +1,8 @@
 body {
 	background-color: rgb(90, 91, 96);
     margin: 0;
-    /*-webkit-user-select: none; */
-    /*user-select:none;*/
+    -webkit-user-select: none; 
+    user-select:none;
 }
 
 #container {
