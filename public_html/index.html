@@ -45,6 +45,7 @@
 
         <!-- My application code -->
         <script type="text/javascript" src="src/MainController.js"></script>
+        <script type="text/javascript" src="src/lib/key-listener.js"></script>
         <script type="text/javascript" src="src/App/ClassExample.js"></script>
         <script type="text/javascript" src="src/App/ClassExample_MouseOver.js"></script>
         <script type="text/javascript" src="src/App/ArmSegment.js"></script>
@@ -57,6 +58,7 @@
          ng-app="appMyExample"
          ng-controller="MainCtrl">
 
+    <shortcut></shortcut>
     <css-timer id="idMainControllerTimer"
                interval="40"
                timeron="true"
@@ -65,28 +67,6 @@
     <div id="container">
         <div class="logo-wrapper">
             <div class="logo"></div>    
-        </div>
-
-        <div class="header">
-            <div class=menu-bar-container>
-                <div class="menu-bar-button">
-                    <input class="textfield" type="text" ng-model="mMouseOver" size=50 readonly>    
-                </div>    
-            </div>
-
-            <div class=menu-bar-container>
-                <div class="menu-bar-button icon">
-                    <div class="delete-icon" ng-click="deleteSceneNode()"></div>
-                </div>
-                <div class="menu-bar-button icon">
-                    <div class="merge-icon" ng-click="combineSceneNodes()"></div>
-                </div>    
-                <div class="menu-bar-button icon">
-                    <div class="zoom-icon"></div>
-                </div> 
-            </div>
-
-            
         </div>
 
         <div id="canvas-wrapper">
@@ -114,6 +94,34 @@
                           ng-model="mColor"
                           size="6"
                           style="background-color:{{mColor}}">                
+                </div>
+            </div>
+
+            <div class="category">
+                <div class="category-title"> World Coordinate Position </div>
+                <div class="category-container">
+                    <input class="textfield" type="text" ng-model="mMouseOver" size=50 readonly>             
+                </div>
+            </div>
+
+            <div class="category">
+                <div class="category-title"> Tools </div>
+                <div class="category-container">
+                    <div class="tool-icon-wrapper">
+                        <div class="delete-icon" ng-click="deleteSceneNode()"></div>
+                    </div>
+                    <div class="tool-icon-wrapper">                        
+                        <div class="merge-icon" ng-click="combineSceneNodes()"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category">
+                <div class="category-title"> Camera </div>
+                <div class="category-container">
+                    <div class="tool-icon-wrapper">
+                        <div class="zoom-icon"></div>
+                    </div>
                 </div>
             </div>
 

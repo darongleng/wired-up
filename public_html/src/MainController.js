@@ -20,7 +20,7 @@ myModule.controller("MainCtrl", function ($scope) {
 
     var canvas = document.getElementById("GLCanvas");
     var canvasWidth = window.innerWidth-250,
-        canvasHeight = window.innerHeight-100;
+        canvasHeight = window.innerHeight-0;
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
 
@@ -70,12 +70,46 @@ myModule.controller("MainCtrl", function ($scope) {
         $scope.mViewManipulator.draw($scope.mView);
     };
 
+    $scope.zoomHold = false;
+    $scope.moveHold = false;
+
+    $scope.keyPressed = function(e) {
+        console.log("key pressed " + e.which)
+        switch (e.which) {
+            case 90: // z key
+                $scope.zoomHold = true;
+                break;
+            case 104: // h key
+                console.log("in h")
+                $scope.moveHold = true;
+                break;
+        }
+    };
+
+    $scope.keyUp = function(e) {
+        console.log("key up " + e.which)
+        $scope.keyCode = e.which;
+    };
+
+    $scope.lastClickPos = [0,0];
+    $scope.currentMouse = [0,0];
 
     $scope.serviceDown = function (event) {
         var canvasX = $scope.mCanvasMouse.getPixelXPos(event);
         var canvasY = $scope.mCanvasMouse.getPixelYPos(event);
         $scope.mLastWCPosX = this.mView.mouseWCX(canvasX);
         $scope.mLastWCPosY = this.mView.mouseWCY(canvasY);
+
+        if ($scope.moveHold) {
+            console.log("in here 1");
+            var lastClickPos = $scope.lastClickPos;
+            if (lastClickPos[0] == 0 && lastClickPos[1] == 0) {
+                lastClickPos[0] = $scope.mLastWCPosX;
+                lastClickPos[1] = $scope.mLastWCPosY;
+            }
+            return;
+        }
+
         $scope.mViewManipulator.detectMouseDown($scope.mLastWCPosX, $scope.mLastWCPosY);
     };
 
@@ -84,6 +118,20 @@ myModule.controller("MainCtrl", function ($scope) {
         var canvasY = $scope.mCanvasMouse.getPixelYPos(event);
         $scope.mLastWCPosX = this.mView.mouseWCX(canvasX);
         $scope.mLastWCPosY = this.mView.mouseWCY(canvasY);
+
+        if ($scope.moveHold && event.which) {
+
+            console.log("in here 2");
+            var dx = $scope.mLastWCPosX - $scope.lastClickPos[0];
+            var dy = $scope.mLastWCPosY - $scope.lastClickPos[1];
+            $scope.lastClickPos[0] = $scope.mLastWCPosX;
+            $scope.lastClickPos[1] = $scope.mLastWCPosY;
+            var mViewPos = $scope.mView.getWCCenter();
+            console.log(dx + ", " + dy);
+            $scope.mView.setWCCenter(mViewPos[0]-dx, mViewPos[1]-dy);
+            
+            return;
+        }
 
         if ($scope.selectedShapeIndex != -1) {
             var position = [$scope.mLastWCPosX, $scope.mLastWCPosY];
@@ -99,6 +147,8 @@ myModule.controller("MainCtrl", function ($scope) {
     };
 
     $scope.serviceUp = function (event) {
+        $scope.lastClickPos = [0,0];
+        $scope.currentMouse = [0,0];
         $scope.mViewManipulator.detectMouseUp();
     };
 
@@ -138,8 +188,6 @@ myModule.controller("MainCtrl", function ($scope) {
     };
 
 
-
-
     // Scaling the main canvas!
     //  from: http://stackoverflow.com/questions/2916081/zoom-in-on-a-point-using-scale-and-translate
     var scale = 1;
@@ -176,8 +224,8 @@ myModule.controller("MainCtrl", function ($scope) {
             $scope.mView.setWCWidth(width / (scaleChange + 1));
 
             // recenter the viewport around the mouse position
-            center[0] += scaleChange * wcX;
-            center[1] += scaleChange * wcY;
+            center[0] += scaleChange * (wcX - center[0]);
+            center[1] += scaleChange * (wcY - center[1]);
             $scope.mView.setWCCenter(center[0], center[1]);
             // console.log("Scale Change: " + scaleChange);
             // console.log("Center: " + center);
