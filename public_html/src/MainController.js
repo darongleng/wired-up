@@ -18,6 +18,7 @@ var myModule = angular.module("appMyExample",
 //       this code does NOT run until the end of loading the HTML page
 
 myModule.controller("MainCtrl", function ($scope) {
+
     // Initialize the graphics system
     gEngine.Core.initializeWebGL('GLCanvas');
     var CanvasMouse = new CanvasMouseSupport('GLCanvas');
@@ -28,11 +29,10 @@ myModule.controller("MainCtrl", function ($scope) {
     $scope.mMyWorld = new ClassExample();
     $scope.mViewManipulator = new ViewManipulator($scope.mMyWorld);
 
-    $scope.mColor = "#ff0f0f";
+    $scope.mColor = "#0BAC8B";
 
     $scope.mLastWCPosX = 0;
     $scope.mLastWCPosY = 0;
-    $scope.mSelectedShape = 'square';
 
     $scope.mView = new Camera(
                 [0, 0],         // wc Center
@@ -59,7 +59,6 @@ myModule.controller("MainCtrl", function ($scope) {
         $scope.mMyWorld.setGuidBoxSize(guideBoxWidth, guideBoxHeight);
         // 3.set guide box position
         var guideBoxCenter = $scope.mView.getWCCenter();
-        console.log("center: " + guideBoxCenter);
         $scope.mMyWorld.setGuidBoxPosition(guideBoxCenter[0], guideBoxCenter[1]);
         // 4.draw small camera
         $scope.mMyWorld.draw($scope.mSmallCamera, true); // true for enabling guidebox

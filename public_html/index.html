@@ -2,8 +2,9 @@
 <html>
     <head>
         <title>Wired Up 1.0</title>
-        <link rel ="icon" type ="image/x-icon" href="./assets/favicon.png">
-        <link rel="stylesheet" href="assets/index.css">
+        <link rel ="icon" type ="image/x-icon" href="./assets/icons/favicon.png">
+        <link rel="stylesheet" href="assets/stylesheets/index.css">
+        <link rel="stylesheet" href="assets/stylesheets/sidebar.css">
 
         <!-- the following says there are javascript source code contained in
              the external source files
@@ -11,6 +12,7 @@
         <!-- external library -->
         <!-- <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script> -->
         <script type="text/javascript" src="src/lib/Angular.js"></script>
+        <script type="text/javascript" src="src/lib/color-picker.js"></script>
         <script type="text/javascript" src="src/lib/gl-matrix.js"></script>
         <script type="text/javascript" src="src/lib/webgl-obj-loader.js"></script>
         <script type="text/javascript" src="src/lib/helper-functions.js"></script>
@@ -60,24 +62,34 @@
                timeron="true"
                callback="mainTimerHandler"></css-timer>
 
-    <br>
+    <div id="container">
+        <div class="logo-wrapper">
+            <div class="logo"></div>    
+        </div>
 
-    <div class="container">
-
-        <div class="canvas-wrapper">
-
-            <div class="header">
-                <h2>
-                    Hierarchical Modeling and Direct Manipulation
-                </h2>
-                Mouse Over
-                <br>
-                <input class="textfield" type="text" ng-model="mMouseOver" size=50 readonly>
-                <br>
-                <br>
+        <div class="header">
+            <div class=menu-bar-container>
+                <div class="menu-bar-button">
+                    <input class="textfield" type="text" ng-model="mMouseOver" size=50 readonly>    
+                </div>    
             </div>
-            <br>
 
+            <div class=menu-bar-container>
+                <div class="menu-bar-button icon">
+                    <div class="delete-icon" ng-click="deleteSceneNode()"></div>
+                </div>
+                <div class="menu-bar-button icon">
+                    <div class="merge-icon" ng-click="combineSceneNodes()"></div>
+                </div>    
+                <div class="menu-bar-button icon">
+                    <div class="zoom-icon"></div>
+                </div> 
+            </div>
+
+            
+        </div>
+
+        <div id="canvas-wrapper">
             <canvas
                 ng-mousemove="serviceMove($event)"
                 ng-mousedown="serviceDown($event)"
@@ -92,27 +104,38 @@
         </div>
         
         <div class="sidebar">
-            <h3>Shape Picker</h3>
-            <br>
-            <p>Current Shape: {{mSelectedShape}}</p>
-            <br>
-            Color: <input colorpicker type="text"
+            <div class="category">
+                <div class="category-title"> Color </div>
+                <div class="category-container">
+                    <input 
+                        class="textfield" 
+                        colorpicker type="text"
+                          colorpicker-position="right"
                           ng-model="mColor"
                           size="6"
-                          style="background-color:{{mColor}}">
-            <br>
-            <button class="button squareButton" ng-mousedown="changeShapeState('0')" 
-                    ng-mouseup="changeShapeState('-1')">Square</button>
-            <button class="button squareButton" ng-mousedown="changeShapeState('1')" 
-                    ng-mouseup="changeShapeState('-1')">Circle</button>
-            <button class="button squareButton" ng-mousedown="changeShapeState('2')" 
-                    ng-mouseup="changeShapeState('-1')">Triangle</button>
-            <button class="button squareButton" ng-click="combineSceneNodes()">
-                Combine Into One SceneNode
-            </button>
-            <button class="button squareButton" ng-click="deleteSceneNode()">Delete Node</button>
-            Current Scroll Mode: {{scrollMode}}
-            <button class="button squareButton" ng-click="changeScrollMode()">
+                          style="background-color:{{mColor}}">                
+                </div>
+            </div>
+
+            <div class="category">
+                <div class="category-title">Basic Shape</div>
+                <div class="category-container">
+                    <div class="shape-wrapper">
+                        <img class="shape-icon" src="./assets/built-in-shapes/basic-square.png"
+                            ng-mousedown="changeShapeState('0')" 
+                            ng-mouseup="changeShapeState('-1')">
+                    </div>
+
+                    <div class="shape-wrapper">
+                        <img class="shape-icon" src="./assets/built-in-shapes/basic-circle.png"
+                        ng-mousedown="changeShapeState('1')" 
+                        ng-mouseup="changeShapeState('-1')">
+                    </div>
+                </div>
+            </div>
+
+            <div style="color:black">Current Scroll Mode: {{scrollMode}}</div>
+            <button class="custom-button squareButton" ng-click="changeScrollMode()">
                 Change Scroll Mode To {{oppositeScrollMode}}
             </button>
         </div>

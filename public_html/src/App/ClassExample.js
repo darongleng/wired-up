@@ -40,22 +40,19 @@ ClassExample.prototype.addNewSceneNode = function(shape, hexColor, wcX, wcY) {
     switch (shape) {
         case 0:
             newShape = new SquareRenderable(this.mConstColorShader);
-            newShape.setColor(rgbColor);
-            newShape.getXform().setSize(2, 2);
-            newShape.getXform().setPosition(0, 0);
             break;
 
         case 1:
             newShape = new CircleRenderable(this.mConstColorShader);
-            newShape.setColor(rgbColor);
-            newShape.getXform().setSize(2, 2);
-            newShape.getXform().setPosition(0, 0);
             break;
 
         default:
             return;
     }
 
+    newShape.setColor(rgbColor);
+    newShape.getXform().setSize(2, 2);
+    newShape.getXform().setPosition(0, 0);
     newNode = new SceneNode(this.mConstColorShader, "New Node", false);
     newNode.getXform().setPosition(wcX, wcY);
     newNode.addToSet(newShape);
