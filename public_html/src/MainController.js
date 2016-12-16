@@ -100,15 +100,15 @@ myModule.controller("MainCtrl", function ($scope) {
         $scope.mLastWCPosX = this.mView.mouseWCX(canvasX);
         $scope.mLastWCPosY = this.mView.mouseWCY(canvasY);
 
-        if ($scope.moveHold) {
-            console.log("in here 1");
-            var lastClickPos = $scope.lastClickPos;
-            if (lastClickPos[0] == 0 && lastClickPos[1] == 0) {
-                lastClickPos[0] = $scope.mLastWCPosX;
-                lastClickPos[1] = $scope.mLastWCPosY;
-            }
-            return;
-        }
+        // if ($scope.moveHold) {
+        //     console.log("in here 1");
+        //     var lastClickPos = $scope.lastClickPos;
+        //     if (lastClickPos[0] == 0 && lastClickPos[1] == 0) {
+        //         lastClickPos[0] = $scope.mLastWCPosX;
+        //         lastClickPos[1] = $scope.mLastWCPosY;
+        //     }
+        //     return;
+        // }
 
         $scope.mViewManipulator.detectMouseDown($scope.mLastWCPosX, $scope.mLastWCPosY);
     };
@@ -119,19 +119,43 @@ myModule.controller("MainCtrl", function ($scope) {
         $scope.mLastWCPosX = this.mView.mouseWCX(canvasX);
         $scope.mLastWCPosY = this.mView.mouseWCY(canvasY);
 
-        if ($scope.moveHold && event.which) {
+        // if ($scope.moveHold && event.which) {
 
-            console.log("in here 2");
-            var dx = $scope.mLastWCPosX - $scope.lastClickPos[0];
-            var dy = $scope.mLastWCPosY - $scope.lastClickPos[1];
-            $scope.lastClickPos[0] = $scope.mLastWCPosX;
-            $scope.lastClickPos[1] = $scope.mLastWCPosY;
-            var mViewPos = $scope.mView.getWCCenter();
-            console.log(dx + ", " + dy);
-            $scope.mView.setWCCenter(mViewPos[0]-dx, mViewPos[1]-dy);
+        //     console.log("in here 2");
+        //     var dx = $scope.mLastWCPosX - $scope.lastClickPos[0];
+        //     var dy = $scope.mLastWCPosY - $scope.lastClickPos[1];
+        //     $scope.lastClickPos[0] = $scope.mLastWCPosX;
+        //     $scope.lastClickPos[1] = $scope.mLastWCPosY;
+
+        //     var mViewPos = $scope.mView.getWCCenter();
+
+        //     console.log("dx: " + dx);
+        //     console.log("dy: " + dy);
+
+        //     var newX = 0; // dummy value
+        //     var newY = 0; // dummy value
             
-            return;
-        }
+
+        //     if (dx >= 0) {
+        //         newX = mViewPos[0]-dx;
+        //     }else {
+        //         newX = mViewPos[0]+dx;
+        //     }
+
+        //     if (dy >= 0) {
+        //         newY = mViewPos[1]-dy;
+        //     } else {
+        //         newY = mViewPos[1]+dy;
+        //     }
+
+        //     console.log("newX: " + newX)
+        //     console.log("newY: " + newY)
+
+        //     $scope.mView.setWCCenter(newX, newY);
+
+        
+        //     return;
+        // }
 
         if ($scope.selectedShapeIndex != -1) {
             var position = [$scope.mLastWCPosX, $scope.mLastWCPosY];
@@ -176,6 +200,10 @@ myModule.controller("MainCtrl", function ($scope) {
         }
         $scope.mViewManipulator.mManipulator.hide();
     };
+
+    $scope.recenterCamera = function () {
+        $scope.mView.setWCCenter(0, 0);
+    }
 
     var scrollModes = ["translate", "zoom"];
     var currentMode = 0;
